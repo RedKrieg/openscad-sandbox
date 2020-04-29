@@ -33,6 +33,7 @@ module square_to_cylinder(length, width, square_thickness, fn) {
 /*
 wrap_svg wraps an svg around a cylinder
 - r is the outer radius of the cylinder
+- h is the height of the cylinder
 - thickness is the depth from r to extrude
 - width and height are the dimensions of the svg file in pixels (you must provide these)
 - scaler can grow or shrink the svg
@@ -40,12 +41,15 @@ wrap_svg wraps an svg around a cylinder
 - center centers the svg toward the negative x axis instead of starting the svg at 0 degrees
 - fn is the number of faces in which to divide the cylinder
 */
-module wrap_svg(r, thickness, filename, width, height, scaler=1, dpi=96, center=false, fn=$fn) {
+module wrap_svg(r, h, thickness, filename, width, height, scaler=1, dpi=96, center=false, fn=$fn) {
     svg_resolution = dpi / 25.4; // dpi -> pixels per mm
     circumference = 2*PI*r;
-    centering_factor = center ? (circumference/scaler - width/svg_resolution)/2 : 0;
-    square_to_cylinder(circumference, height*scaler/svg_resolution, thickness, fn)
+    // these are used in the translate of the imported rotated svg.  the scaler is used to counteract the scale() of the import.
+    x_centering_factor = center ? (circumference/scaler - width/svg_resolution)/2 : 0;
+    y_centering_factor = center ? h/scaler - (h/scaler - height/svg_resolution)/2 : h/scaler;
+    // use h instead of height here to allow for centering
+    square_to_cylinder(circumference, h, thickness, fn)
         linear_extrude(thickness) scale(scaler)
-            translate([height/svg_resolution, centering_factor, 0]) // move to positive quadrant and add centering factor
+            translate([y_centering_factor, x_centering_factor, 0]) // move to positive quadrant and add centering factors
                 rotate(90) import(filename, dpi=dpi);
 }

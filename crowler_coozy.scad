@@ -35,7 +35,7 @@ module handle(xscaler, yscaler) {
     ];
     function contour() = ellipse(8, 12);
     step = 1/$fn;
-    path = [for (t=[0:step:1-step]) f(t)];
+    path = [for (t=[0:step:1]) f(t)];
     path_transforms = construct_transform_path(path);
     sweep(contour(), path_transforms);
 }
@@ -45,6 +45,5 @@ difference() {
             rotate([0, 0, 90]) translate([inner_diameter/2, 0, inner_wall_height/2+wall_thickness/2]) handle(handle_opening_max_width, handle_opening_max_height/2);
         coozy_shell();
     }
-    translate([0, 0, handle_opening_max_height/4])
-        wrap_svg(inner_diameter/2+wall_thickness+1, logo_thickness+1, "benchtopsquare.svg", 750, 750, scaler=0.6, fn=$fn, center=true);
+    wrap_svg(r=inner_diameter/2+wall_thickness+1, h=inner_wall_height+wall_thickness, thickness=logo_thickness+1, filename="benchtopsquare.svg", width=750, height=750, scaler=0.6, fn=$fn, center=true);
 }
