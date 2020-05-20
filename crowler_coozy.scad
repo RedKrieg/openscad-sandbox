@@ -4,9 +4,9 @@ use <scad-utils/morphology.scad>
 use <list-comprehension-demos/sweep.scad>
 use <wrap_svg.scad>
 
-inner_diameter = 84.5;
+inner_diameter = 84.25;
 inner_wall_height = 175;
-wall_thickness = 8;
+wall_thickness = 10;
 logo_thickness = 0.5;
 
 handle_opening_max_width = 45;
