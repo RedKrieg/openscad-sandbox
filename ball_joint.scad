@@ -1,3 +1,7 @@
+//design is a clone of https://www.thingiverse.com/thing:889439
+//I did not want the extra thin areas in the socket and wanted more of a rounded socket edge, hence this project.
+
+//morphology library (for rounding) from https://github.com/openscad/scad-utils
 use <scad-utils/morphology.scad>
 
 $fn=101;
