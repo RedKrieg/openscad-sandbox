@@ -57,7 +57,7 @@ module socket(
 ) {
     translate([0, 0, ball_diameter / 2 + stem_length]) difference() {
         rotate_extrude() {
-            difference() {
+            fillet(r=wall_thickness*0.499) difference() {
                 union() {
                     socket_wall(ball_diameter, wall_thickness, opening_angle);
                     connector_wall(ball_diameter, tunnel_diameter, wall_thickness, stem_length);
@@ -81,7 +81,7 @@ module ball(
 ) {
     small_ball_diameter = (ball_diameter - wall_thickness * 2) * small_ball_multiplier;
     translate([0, 0, small_ball_diameter / 2 + stem_length]) rotate_extrude() {
-        difference() {
+        fillet(r=wall_thickness*0.499) difference() {
             union() {
                 if (rounded_opening) {
                     //lower resolution to 15%, save $fn for use in the wall
