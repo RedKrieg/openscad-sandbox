@@ -8,6 +8,7 @@ tooth_height = 1.2;
 tooth_spacing = 2;
 width = 5;
 thickness = 1.4;
+ball_x_max = 11;  // lets us have flats on the ball for printing on side
 $fn = 101;
 
 module gripper_teeth(teeth, height, spacing) {
@@ -69,7 +70,7 @@ module gripper_arms(radius, grip_angle, thickness, width) {
     }
 }
 
-module gripper(radius, grip_angle, teeth, tooth_height, tooth_spacing, thickness, width) {
+module gripper(radius, grip_angle, teeth, tooth_height, tooth_spacing, thickness, width, ball_x_max) {
     function x(theta) = 2 * radius * cos(theta);
     function y(theta) = 2 * radius * sin(theta);
     theta = grip_angle / 4;
@@ -89,7 +90,10 @@ module gripper(radius, grip_angle, teeth, tooth_height, tooth_spacing, thickness
         arm_cutaway(radius, grip_angle, width, thickness+0.01);
         translate([0, 0, width]) rotate([180, 0, 0]) arm_cutaway(radius, grip_angle, width, thickness+0.01);
     }
-    translate([0, 0, thickness]) mirror([0, 0, 1]) ball(stem_length=thickness);
+    intersection() {
+        translate([0, 0, thickness]) mirror([0, 0, 1]) ball(stem_length=thickness);
+        translate([-ball_x_max/2, -radius*2, -radius*2]) cube([ball_x_max, radius*4, radius*4]);
+    }
 }
 
-gripper(radius, grip_angle, teeth, tooth_height, tooth_spacing, thickness, width);
+gripper(radius, grip_angle, teeth, tooth_height, tooth_spacing, thickness, width, ball_x_max);
