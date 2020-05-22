@@ -5,7 +5,7 @@ $fn = 101;
 sides = 6;
 lower_radius = 90;
 upper_radius = 85;
-ball_radius = 6.8;  //base of ball
+ball_radius = 5.5;  //base of ball
 
 module base(sides, lower_radius, upper_radius, ball_radius) {
     theta = 360/sides;
