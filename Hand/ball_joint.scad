@@ -4,6 +4,8 @@
 //morphology library (for rounding) from https://github.com/openscad/scad-utils
 use <scad-utils/morphology.scad>
 
+use <dimple.scad>
+
 $fn=101;
 
 module socket_wall(diameter, wall_thickness, opening_angle) {
@@ -46,6 +48,19 @@ module flex_cut(ball_diameter, flex_depth_percent, flex_cut_percent) {
     }
 }
 
+module dimple_cut(ball_diameter, wall_thickness, dimple_radius, dimple_depth, flex_depth_percent, flex_cut_percent) {
+    br = ball_diameter / 2;
+    depth = br - ball_diameter * flex_depth_percent;
+    cut_width = br * flex_cut_percent / 1.5;
+    rotate([90, 0, 45]) linear_extrude(height=ball_diameter) rounding(0.499 * cut_width) difference() {
+        shell(cut_width) {
+            circle(r = dimple_radius);
+            translate([-dimple_radius, depth]) square([2 * dimple_radius, -depth]);
+        }
+        translate([-dimple_radius, depth * 2]) square([2 * dimple_radius, -depth * 2]);
+    }
+}
+
 module socket(
     ball_diameter = 16,
     wall_thickness = 1.8,
@@ -53,20 +68,34 @@ module socket(
     stem_length = 0,
     tunnel_diameter = 5,
     flex_depth_percent = 0.7,  //depth of flex cut as percentage of diameter
-    flex_cut_percent = 0.12  //round cut radius, flat cut width as percentage of diameter
+    flex_cut_percent = 0.12,  //round cut radius, flat cut width as percentage of diameter
+    dimples = true,
+    dimple_radius = 1.0,
+    dimple_depth = 0.25
 ) {
     translate([0, 0, ball_diameter / 2 + stem_length]) difference() {
-        rotate_extrude() {
-            fillet(r=wall_thickness*0.499) difference() {
-                union() {
-                    socket_wall(ball_diameter, wall_thickness, opening_angle);
-                    connector_wall(ball_diameter, tunnel_diameter, wall_thickness, stem_length);
+        union() {
+            rotate_extrude() {
+                fillet(r=wall_thickness*0.499) difference() {
+                    union() {
+                        socket_wall(ball_diameter, wall_thickness, opening_angle);
+                        connector_wall(ball_diameter, tunnel_diameter, wall_thickness, stem_length);
+                    }
+                    translate([-ball_diameter + tunnel_diameter / 2, -(ball_diameter * 0.5 + stem_length)]) square([ball_diameter, ball_diameter + stem_length]);
                 }
-                translate([-ball_diameter + tunnel_diameter / 2, -(ball_diameter * 0.5 + stem_length)]) square([ball_diameter, ball_diameter + stem_length]);
+            }
+            if (dimples) {
+                rotate([0, 0, -45]) intersection() {
+                    sphere(r=ball_diameter / 2 - wall_thickness / 2);
+                    dimple(ball_diameter / 2 - wall_thickness, dimple_radius, dimple_depth);
+                }
             }
         }
         flex_cut(ball_diameter, flex_depth_percent, flex_cut_percent);
         rotate([0, 0, 90]) flex_cut(ball_diameter, flex_depth_percent, flex_cut_percent);
+        if (dimples) {
+            dimple_cut(ball_diameter, wall_thickness, dimple_radius, dimple_depth, flex_depth_percent, flex_cut_percent);
+        }
     }
 }
 
@@ -77,22 +106,31 @@ module ball(
     stem_length = 0,
     tunnel_diameter = 5,
     small_ball_multiplier = 1.02,  //increase or decrease ball to snug (greater than 1.0) or loosen (less than 1.0) fit
-    rounded_opening = true  //round the edges of the opening in the ball, lowers surface area, but increases diameter of cables that can fit through a bent joint
+    rounded_opening = true,  //round the edges of the opening in the ball, lowers surface area, but increases diameter of cables that can fit through a bent joint
+    dimples = true,
+    dimple_radius = 1.0,
+    dimple_depth = 0.25
 ) {
     small_ball_diameter = (ball_diameter - wall_thickness * 2) * small_ball_multiplier;
-    translate([0, 0, small_ball_diameter / 2 + stem_length]) rotate_extrude() {
-        fillet(r=wall_thickness*0.499) difference() {
-            union() {
-                if (rounded_opening) {
-                    //lower resolution to 15%, save $fn for use in the wall
-                    fn = $fn;
-                    rounding(r=wall_thickness * 0.15, $fn=ceil(fn * 0.15)) ball_wall(small_ball_diameter, wall_thickness, base_cutoff_percent, $fn=fn);
-                } else {
-                    ball_wall(small_ball_diameter, wall_thickness, base_cutoff_percent);
+    translate([0, 0, small_ball_diameter / 2 + stem_length]) difference() {
+        rotate_extrude() {
+            fillet(r=wall_thickness*0.499) difference() {
+                union() {
+                    if (rounded_opening) {
+                        //lower resolution to 15%, save $fn for use in the wall
+                        fn = $fn;
+                        rounding(r=wall_thickness * 0.15, $fn=ceil(fn * 0.15)) ball_wall(small_ball_diameter, wall_thickness, base_cutoff_percent, $fn=fn);
+                    } else {
+                        ball_wall(small_ball_diameter, wall_thickness, base_cutoff_percent);
+                    }
+                    connector_wall(small_ball_diameter, tunnel_diameter, wall_thickness, stem_length);
                 }
-                connector_wall(small_ball_diameter, tunnel_diameter, wall_thickness, stem_length);
+                translate([-small_ball_diameter + tunnel_diameter / 2, -(small_ball_diameter * 0.5 + stem_length)]) square([small_ball_diameter, small_ball_diameter + stem_length]);
             }
-            translate([-small_ball_diameter + tunnel_diameter / 2, -(small_ball_diameter * 0.5 + stem_length)]) square([small_ball_diameter, small_ball_diameter + stem_length]);
+        }
+        if (dimples) {
+            // TODO - make this less magic, don't want to see any arbitrary numbers in here
+            spiral_dimples(small_ball_diameter / 2, dimple_radius=dimple_radius, dimple_depth=dimple_depth, phi=-26, phi_min=-45, phi_max=30);
         }
     }
 }
