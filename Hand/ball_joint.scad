@@ -71,7 +71,7 @@ module socket(
     flex_cut_percent = 0.12,  //round cut radius, flat cut width as percentage of diameter
     dimples = true,
     dimple_radius = 1.0,
-    dimple_depth = 0.25
+    dimple_depth = 0.5
 ) {
     translate([0, 0, ball_diameter / 2 + stem_length]) difference() {
         union() {
@@ -109,7 +109,7 @@ module ball(
     rounded_opening = true,  //round the edges of the opening in the ball, lowers surface area, but increases diameter of cables that can fit through a bent joint
     dimples = true,
     dimple_radius = 1.0,
-    dimple_depth = 0.25
+    dimple_depth = 0.5
 ) {
     small_ball_diameter = (ball_diameter - wall_thickness * 2) * small_ball_multiplier;
     translate([0, 0, small_ball_diameter / 2 + stem_length]) difference() {
@@ -145,11 +145,14 @@ module ball_joint(
     flex_depth_percent = 0.7,
     flex_cut_percent = 0.12,
     small_ball_multiplier = 1.02,
-    rounded_opening = true
+    rounded_opening = true,
+    dimples = true,
+    dimple_radius = 1.0,
+    dimple_depth = 0.5
 ) {
     union() {
-        socket(ball_diameter, wall_thickness, opening_angle, separation / 2, tunnel_diameter, flex_depth_percent, flex_cut_percent);
-        mirror([0, 0, 1]) ball(ball_diameter, wall_thickness, base_cutoff_percent, separation / 2, tunnel_diameter, small_ball_multiplier, rounded_opening);
+        socket(ball_diameter, wall_thickness, opening_angle, separation / 2, tunnel_diameter, flex_depth_percent, flex_cut_percent, dimples, dimple_radius, dimple_depth);
+        mirror([0, 0, 1]) ball(ball_diameter, wall_thickness, base_cutoff_percent, separation / 2, tunnel_diameter, small_ball_multiplier, rounded_opening, dimples, dimple_radius, dimple_depth);
     }
 }
 
