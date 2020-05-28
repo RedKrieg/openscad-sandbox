@@ -7,6 +7,16 @@ lower_radius = 90;
 upper_radius = 85;
 ball_radius = 5.5;  //base of ball
 
+module rounded_edge(radius, height) {
+    scale([1, 1, height / (radius + height)]) minkowski() {
+        children();
+        difference() {
+            sphere(radius);
+            translate([-radius, -radius, -2 * radius]) cube(radius*2);
+        }
+    }
+}
+
 module base(sides, lower_radius, upper_radius, ball_radius) {
     theta = 360/sides;
     fn = $fn;
