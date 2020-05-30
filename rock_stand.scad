@@ -6,9 +6,12 @@ cup_depth = 1.5;
 support_thickness = 2;
 
 rock_points = [
-    [0, 0, 5],
-    [25, 25, 0],
-    [-15, 30, 10]
+    [0, 0, 0],
+    [-41, 23, 0],
+    [-13, 99, 9],
+    [107, 27, 8],
+    [59, 77, 0],
+    [66, 124, 3]
 ];
 
 // radius of the sphere used to cut a dimple
@@ -20,7 +23,7 @@ module pits(base_thickness, wall_thickness, radius) {
     y_spacing = 2 * radius * sin(60) + wall_thickness;
     x_spacing = y_spacing * cos(30);
     linear_extrude(height=base_thickness) {
-        for (x=[-10:10], y=[-10:10]) {
+        for (x=[-20:20], y=[-20:20]) {
             translate([x*x_spacing, y*y_spacing + abs(x%2)*y_spacing/2]) circle(r=radius, $fn=6);
         }
     }
