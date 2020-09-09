@@ -7,11 +7,9 @@ support_thickness = 2;
 
 rock_points = [
     [0, 0, 0],
-    [-41, 23, 0],
-    [-13, 99, 9],
-    [107, 27, 8],
-    [59, 77, 0],
-    [66, 124, 3]
+    [60, 39, 3],
+    [-1, 124, 0],
+    [-41, 127, 8]
 ];
 
 // radius of the sphere used to cut a dimple
