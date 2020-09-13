@@ -5,12 +5,12 @@ use <list-comprehension-demos/sweep.scad>
 use <wrap.scad>
 
 // standard 12 oz beer can
-inner_diameter = 66.8;
-inner_wall_height = 105;
+//inner_diameter = 66.8;
+//inner_wall_height = 105;
 
 // slim "white claw" can
-//inner_diameter = 58.2;
-//inner_wall_height = 140;
+inner_diameter = 58.2;
+inner_wall_height = 140;
 
 // outer shell wall thickness
 wall_thickness = 8;
@@ -20,9 +20,9 @@ handle_opening_max_height = 120;
 render_handle = false;
 
 // I recommend max resolution of 200x200px for images
-png_filename = "tori_avery.png";
+png_filename = "dick_butt.png";
 // 1.0 scale is 1px/mm, shrink as needed based on your outer circumference
-png_scale = 0.4;
+png_scale = 0.76;
 // by default, white will be deeply embossed and black will be at the outer radius.  this will invert the depth map
 png_invert = true;
 // maximum cut depth in to surface
