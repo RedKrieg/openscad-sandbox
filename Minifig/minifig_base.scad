@@ -8,10 +8,10 @@ lip = "yes"; //[yes,no]
 indexed_array = "no"; //[yes,no]
 
 // How rough the lip should be.  Try 4 and 8 for interesting options other than a smooth curve.
-lip_roughness = 100; //[4:2:100]
+lip_roughness = 32; //[4:2:100]
 
 // Resolution (higher is *much* slower)
-$fn = 100;
+$fn = 32;
 
 // Base radius we scale from.  Adjust if your map is not 25.4mm squares
 radius = 12.5;

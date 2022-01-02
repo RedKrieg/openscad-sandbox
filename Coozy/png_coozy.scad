@@ -9,8 +9,12 @@ use <wrap.scad>
 //inner_wall_height = 105;
 
 // slim "white claw" can
-inner_diameter = 58.2;
-inner_wall_height = 140;
+//inner_diameter = 58.2;
+//inner_wall_height = 140;
+
+// 22oz yankee candle
+inner_diameter = 99.0;
+inner_wall_height = 110;
 
 // outer shell wall thickness
 wall_thickness = 8;
@@ -20,13 +24,13 @@ handle_opening_max_height = 120;
 render_handle = false;
 
 // I recommend max resolution of 200x200px for images
-png_filename = "image.png";
+png_filename = "heartagram.png";
 // 1.0 scale is 1px/mm, shrink as needed based on your outer circumference
-png_scale = 0.76;
-// by default, white will be deeply embossed and black will be at the outer radius.  this will invert the depth map
-png_invert = true;
+png_scale = 1.0;
+// by default, white will be deeply embossed and black will be at the outer radius.  setting this to true will invert the depth map
+png_invert = false;
 // maximum cut depth in to surface
-png_depth = 1;
+png_depth = 4;
 
 // this is due to the way 0 width walls work in openscad, added to the radius of the image
 nonzero_buffer = 0.05;
