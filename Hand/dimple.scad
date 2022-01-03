@@ -1,5 +1,6 @@
-$fa = $preview ? 12 : 2;
-$fs = $preview ? 1 : 0.2;
+$fa = $preview ? 12 : 4;
+$fs = $preview ? 1 : 0.25;
+
 large_radius = 6.2;
 dimple_radius = 1; // [0:0.1:10]
 dimple_depth = 0.25;
@@ -74,6 +75,28 @@ module imported_ball(large_radius, dimple_radius, dimple_depth) {
     }
 }
 
+module fibonacci_ball(large_radius, dimple_radius, dimple_depth, dimple_count) {
+    function phi(i) = acos(1 - 2 * i / dimple_count);
+    function theta(i) = 180 * i * (1 + sqrt(5));
+    difference() {
+        sphere(large_radius);
+        for (i=[0.5:1:dimple_count-0.5])
+            rotate([0, phi(i), theta(i)]) rotate([0, 90, 0]) dimple(large_radius, dimple_radius, dimple_depth);
+    }
+}
+
+module offset_fibonacci_ball(large_radius, dimple_radius, dimple_depth, dimple_count) {
+    // http://extremelearning.com.au/how-to-evenly-distribute-points-on-a-sphere-more-effectively-than-the-canonical-fibonacci-lattice/
+    epsilon = 1.33;
+    function phi(i) = acos(1 - 2 * (i + epsilon) / (dimple_count - 1 + 2 * epsilon));
+    function theta(i) = 180 * i / (1 + sqrt(5));
+    difference() {
+        sphere(large_radius);
+        for (i=[0.5:1:dimple_count])
+            rotate([0, phi(i), theta(i)]) rotate([0, 90, 0]) dimple(large_radius, dimple_radius, dimple_depth);
+    }
+}
+
 module dimple_sphere(large_radius, dimple_radius, dimple_depth) {
     difference() {
         sphere(large_radius);
@@ -81,5 +104,6 @@ module dimple_sphere(large_radius, dimple_radius, dimple_depth) {
     }
 }
 
-dimple_sphere(large_radius, dimple_radius, dimple_depth);
+//dimple_sphere(large_radius, dimple_radius, dimple_depth);
 //imported_ball(large_radius, dimple_radius, dimple_depth);
+fibonacci_ball(large_radius, dimple_radius, dimple_depth, 88);
