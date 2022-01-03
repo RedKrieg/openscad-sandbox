@@ -1,4 +1,5 @@
-$fn = 101;
+$fa = $preview ? 12 : 2;
+$fs = $preview ? 1 : 0.2;
 large_radius = 6.2;
 dimple_radius = 1; // [0:0.1:10]
 dimple_depth = 0.25;
@@ -69,7 +70,7 @@ module imported_ball(large_radius, dimple_radius, dimple_depth) {
     include <dimple_vectors.scad>
     difference() {
         sphere(large_radius);
-        for (i=rotation_vectors) rotate(i) dimple(large_radius, dimple_radius, dimple_depth);
+        for (i=rotation_vectors) rotate(i) rotate([0, 90, 0]) dimple(large_radius, dimple_radius, dimple_depth);
     }
 }
 
@@ -81,3 +82,4 @@ module dimple_sphere(large_radius, dimple_radius, dimple_depth) {
 }
 
 dimple_sphere(large_radius, dimple_radius, dimple_depth);
+//imported_ball(large_radius, dimple_radius, dimple_depth);
