@@ -28,7 +28,11 @@ connector_width_top = 4; //[0.1:0.1:5]
 //connection clip width at bottom
 connector_width_bottom = 3; //[0.1:0.1:5]
 //extra space to make for an easier fit when clipping together
-connector_gap_offset = 0.1; //[0.05:0.05:0.5]
+connector_gap_offset = 0.25; //[0.05:0.05:0.5]
+//length of tongue/groove around the outside in degrees
+connector_degrees = 10; //[6:0.5:18]
+//number of connectors
+connector_count = 3; //[0, 2, 3, 6]
 //whether to use a rounded shell
 shell_style = "rounded"; //[rounded, cylinder]
 //for rounded shells, how far it should expand
@@ -41,15 +45,21 @@ shell_grip_ratio = 10;
 grip_style = "helical"; //[vertical, helical]
 //how much to slant helical grooves, related to shell_grip_count
 grip_helix_offset = 1; //[1:1:6]
+//radius of the magnet
+magnet_radius = 3.05;
+//height of the magnet
+magnet_height = 2.1;
 //resolution, higher numbers render slower.  primes seem to help slicers?
 $fn = 101;
 
 //reusable math
 shell_radius = (die_radius_inner+wall_thickness)*3;
-connector_top_outer_radius = shell_radius-wall_thickness;
+connector_top_outer_radius = shell_radius - wall_thickness * 2; //extra distance from outer wall
 connector_top_inner_radius = connector_top_outer_radius - connector_width_top;
-connector_bottom_outer_radius = shell_radius-wall_thickness-(connector_width_top-connector_width_bottom)/2;
+connector_bottom_outer_radius = shell_radius-wall_thickness*2-(connector_width_top-connector_width_bottom)/2;
 connector_bottom_inner_radius = connector_bottom_outer_radius-connector_width_bottom;
+//distance from center to center of magnet
+magnet_distance = shell_radius-wall_thickness-magnet_radius;
 
 module pits(depth) {
     union() {
@@ -118,9 +128,9 @@ module wedge(h, r, theta, scale=1) {
 module connector_tongue() {
     mirror([0, 1, 0]) difference() {
         connector_base(0);
-        step = 360/6;
+        step = 360/connector_count;
         for (theta=[step:step:360]) {
-            rotate([0, 0, theta]) wedge(h=connector_height, r=connector_top_outer_radius*2, theta=step/1.25, scale=1.05);
+            rotate([0, 0, theta]) wedge(h=connector_height, r=connector_top_outer_radius*2, theta=step-connector_degrees, scale=1.05);
         }
     }
 }
@@ -130,21 +140,33 @@ module connector_groove() {
         //sloped part
         mirror([0, 1, 0]) difference() {
             connector_base(connector_gap_offset);
-            step = 360/6;
+            step = 360/connector_count;
             for (theta=[step:step:360]) {
-                rotate([0, 0, theta]) wedge(h=connector_height+connector_gap_offset, r=connector_top_outer_radius*2, theta=step/1.25);
+                rotate([0, 0, theta]) wedge(h=connector_height+connector_gap_offset*2, r=connector_top_outer_radius*2, theta=step-connector_degrees);
             }
         }
         //open part
         difference() {
-            cylinder(h=connector_height+connector_gap_offset, r1=connector_top_outer_radius+connector_gap_offset*2, r2=connector_top_outer_radius+connector_gap_offset);
-            cylinder(h=connector_height+connector_gap_offset, r1=connector_top_inner_radius-connector_gap_offset*2, r2=connector_top_inner_radius-connector_gap_offset);
-            step = 360/6;
+            cylinder(h=connector_height+connector_gap_offset*2, r1=connector_top_outer_radius+connector_gap_offset*2, r2=connector_top_outer_radius+connector_gap_offset);
+            cylinder(h=connector_height+connector_gap_offset*2, r1=connector_top_inner_radius-connector_gap_offset*2, r2=connector_top_inner_radius-connector_gap_offset);
+            step = 360/connector_count;
             for (theta=[step:step:360]) {
                 //fudge factor to fix 0 width wall between gaps
-                rotate([0, 0, theta+0.01]) wedge(h=connector_height+connector_gap_offset, r=connector_top_outer_radius*2, theta=step/1.26);
+                rotate([0, 0, theta+0.01]) wedge(h=connector_height+connector_gap_offset*2, r=connector_top_outer_radius*2, theta=step-connector_degrees-0.5);
             }
         }
+    }
+}
+
+module magnet() {
+    cylinder(h=magnet_height, r=magnet_radius);
+}
+
+module magnet_array() {
+    step = 360/3;
+    offset = step/2;
+    for (theta=[offset:step:360]) {
+        rotate([0, 0, theta]) translate([magnet_distance, 0, 0]) magnet();
     }
 }
 
@@ -154,6 +176,8 @@ module die_tray(depth) {
             shell(h=depth);
             pits(depth);
             connector_groove();
+            magnet_array();
+            translate([0, 0, depth]) mirror([0, 0, 1]) magnet_array();
         }
         translate([0, 0, depth]) connector_tongue();
     }
@@ -193,6 +217,7 @@ module lid(h) {
     difference() {
         shell(h);
         connector_groove();
+        magnet_array();
         if (lid_design=="dnd") {
             dnd_logo(h);
         } else if (lid_design=="cr") {
