@@ -1,7 +1,7 @@
 bowl_diameter = 97;
 bowl_height = 35;
 
-stick_diameter_min = 4;
+stick_diameter_min = 4.1;
 stick_diameter_max = 6;
 stick_taper_length = 70;
 spoon_handle_width = 8;
@@ -14,6 +14,9 @@ tamper_handle_height = 45;
 wall_thickness_min = 2;
 
 shell_arc_degrees = 120;
+
+hex_radius = 2;
+hex_arc = bowl_diameter*PI/hex_radius/180; //figure this out to rotate wall_thickness_min + 2*hex_radius/2*sqrt(3)?
 
 bowl_radius = bowl_diameter/2;
 shell_radius=stick_diameter_max/2+wall_thickness_min*2;
@@ -54,7 +57,7 @@ module tamper_cutout()
 
 module shell()
 {
-    linear_extrude(bowl_height) union()
+    linear_extrude(bowl_height + wall_thickness_min) union()
     {
         intersection()
         {
@@ -76,17 +79,29 @@ module shell()
     }
 }
 
+module hex_cutout()
+{
+    translate([0, 0, wall_thickness_min+hex_radius]) rotate([0, 90, 90]) cylinder(h=bowl_radius*2, r1=0, r2=hex_radius*2, $fn=6);
+}
+
 module incense_rack()
 {
     difference()
     {
         shell();
-        rotate([0, 0, 127]) translate([bowl_radius+shell_radius, 0, 0]) stick_cutout();
-        rotate([0, 0, 150]) translate([bowl_radius+shell_radius, 0, 0]) stick_cutout();
-        translate([0, bowl_radius+shell_radius, 0]) spoon_cutout();
-        rotate([0, 0, 53]) translate([bowl_radius+shell_radius-tamper_base_height, 0, bowl_height]) rotate([0, 90, 0]) tamper_cutout();
+        translate([0, 0, wall_thickness_min]) union()
+        {
+            rotate([0, 0, 127]) translate([bowl_radius+shell_radius, 0, 0]) stick_cutout();
+            rotate([0, 0, 150]) translate([bowl_radius+shell_radius, 0, 0]) stick_cutout();
+            translate([0, bowl_radius+shell_radius, 0]) spoon_cutout();
+            rotate([0, 0, 53]) translate([bowl_radius+shell_radius-tamper_base_height, 0, bowl_height]) rotate([0, 90, 0]) tamper_cutout();
+        }
+        for(i=[-shell_arc_degrees/2:6:shell_arc_degrees/2])
+        {
+            rotate([0, 0, i]) hex_cutout();
+        }
     }
 }
 
-incense_rack();
 
+incense_rack();
