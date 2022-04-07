@@ -5,19 +5,19 @@ size = "medium"; //[tiny,small,medium,large,huge,gargantuan]
 lip = "yes"; //[yes,no]
 
 // Do you want to have numbered tiles in an array?
-indexed_array = "no"; //[yes,no]
+indexed_array = "yes"; //[yes,no]
 
 // How rough the lip should be.  Try 4 and 8 for interesting options other than a smooth curve.
 lip_roughness = 32; //[4:2:100]
 
 // Resolution (higher is *much* slower)
-$fn = 32;
+$fn = 64;
 
 // Base radius we scale from.  Adjust if your map is not 25.4mm squares
 radius = 12.5;
 
 // Number of columns when indexing
-columns = 3;
+columns = 2;
 
 // Number of rows when indexing
 rows = 4;
@@ -35,7 +35,7 @@ gap_base = 0.5; //[0:0.1:1.0]
 gap_degrees = 45; //[30:5:90]
 
 // Depth for font pocket
-font_depth = 0.5; //[0.1:0.1:1]
+font_depth = 0.2; //[0.1:0.1:1]
 
 // Space between bases when using an indexing array
 array_gap = 5; //[1:10]
@@ -88,7 +88,7 @@ module minifig_base()
         cylinder(h=base_height,r=base_radius);
         
         // Gap for figure
-        //translate([gap_center_offset,0,gap_base]) linear_extrude(height=base_height) arc(thick=gap_size,radius=base_radius*2,angle=gap_degrees);
+        translate([gap_center_offset,0,gap_base]) linear_extrude(height=base_height) arc(thick=gap_size,radius=base_radius*2,angle=gap_degrees);
         
         // Bevelled lip
         if (str(lip) == str("yes"))
