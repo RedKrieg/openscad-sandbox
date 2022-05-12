@@ -1,20 +1,20 @@
 //which object should be rendered
-render_object = "lid"; //[die, figure, lid]
-//if rendering lid, which design ot put on it
-lid_design = "jupiter"; //[none, dnd, cr, web, text]
+render_object = "lid"; //[die, figure, lid, pads]
+//if rendering lid, which design to put on it
+lid_design = "none"; //[none, dnd, cr, web, text]
 //text to put on lid
-lid_text = "D&D";
+lid_text = "BEEG Dice";
 //font for lid text
-lid_text_font = "MagicMedieval";
+lid_text_font = "Fira Sans:style=Regular";
 //scale text to fit lid
-lid_text_scale = 2.0; //[0.1:0.1:8]
+lid_text_scale = 1.3; //[0.1:0.1:8]
 //depth of logo when using a lid design
 logo_depth = 0.3; //[0.1:0.1:1.0]
-//actual largest distance between two points on a set of 7 rpg dice
-die_radius_inner = 12.2; //[0.1:0.1:15]
+//actual largest distance between two points on a set of 7 rpg dice (12.2mm measured)
+die_radius_inner = 13; //[0.1:0.1:15]
 die_radius = die_radius_inner/cos(30);
-//height of tallest die when lying flat in pocket
-die_pocket_height = 21; //[0.1:0.1:30]
+//height of tallest die when lying flat in pocket (21mm measured)
+die_pocket_height = 25; //[0.1:0.1:30]
 //height of figure when lying flat in pocket
 figure_pocket_height = 26; //[0.1:0.1:40]
 //wall thickness between cells
@@ -270,6 +270,11 @@ module jupiter_logo(h) {
     translate([0, 0, h]) mirror([0, 0, 1]) linear_extrude(height=logo_depth) scale([sf, sf]) import("jupiter.svg", center=true);
 }
 
+module beeg_logo(h) {
+    sf = 0.62;
+    translate([-1, 0, h]) mirror([0, 0, 1]) linear_extrude(height=logo_depth) scale([sf, sf]) import("beegdice.svg", center=true);
+}
+
 module lid_text(h) {
     sf = lid_text_scale;
     translate([0, 0, h]) mirror([0, 0, 1]) linear_extrude(height=logo_depth) scale([sf, sf]) text(text=lid_text, font=lid_text_font, halign="center", valign="center");
@@ -298,6 +303,8 @@ module lid(h) {
             krullglaive_logo(h);
         } else if (lid_design=="jupiter") {
             jupiter_logo(h);
+        } else if (lid_design=="beeg") {
+            beeg_logo(h);
         }
     }
 }
@@ -306,6 +313,8 @@ if (render_object == "die") {
     die_tray(die_tray_depth);
 } else if (render_object == "figure") {
     figure_tray(figure_tray_depth);
-} else {
+} else if (render_object == "lid") {
     lid(die_tray_depth/4);
+} else {
+    pits(0.6+wall_thickness);
 }
