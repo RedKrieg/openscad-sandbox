@@ -1,7 +1,7 @@
 //which object should be rendered
 render_object = "lid"; //[die, figure, lid, pads]
 //if rendering lid, which design to put on it
-lid_design = "none"; //[none, dnd, cr, web, text]
+lid_design = "scratch"; //[none, dnd, cr, web, text]
 //text to put on lid
 lid_text = "BEEG Dice";
 //font for lid text
@@ -10,11 +10,11 @@ lid_text_font = "Fira Sans:style=Regular";
 lid_text_scale = 1.3; //[0.1:0.1:8]
 //depth of logo when using a lid design
 logo_depth = 0.3; //[0.1:0.1:1.0]
-//actual largest distance between two points on a set of 7 rpg dice (12.2mm measured)
-die_radius_inner = 13; //[0.1:0.1:15]
+//actual largest distance between two points on a set of 7 rpg dice (12.2mm measured, 13 jumbo)
+die_radius_inner = 12.2; //[0.1:0.1:15]
 die_radius = die_radius_inner/cos(30);
-//height of tallest die when lying flat in pocket (21mm measured)
-die_pocket_height = 25; //[0.1:0.1:30]
+//height of tallest die when lying flat in pocket (21mm measured, 25 jumbo)
+die_pocket_height = 21; //[0.1:0.1:30]
 //height of figure when lying flat in pocket
 figure_pocket_height = 26; //[0.1:0.1:40]
 //wall thickness between cells
@@ -50,7 +50,9 @@ magnet_radius = 3.05;
 //height of the magnet
 magnet_height = 2.1;
 //resolution, higher numbers render slower.  primes seem to help slicers?
-$fn = 101;
+//$fn = 101;
+$fa = 360/101;
+$fs = 0.2;
 
 //reusable math
 shell_radius = (die_radius_inner+wall_thickness)*3;
@@ -275,6 +277,11 @@ module beeg_logo(h) {
     translate([-1, 0, h]) mirror([0, 0, 1]) linear_extrude(height=logo_depth) scale([sf, sf]) import("beegdice.svg", center=true);
 }
 
+module scratch_logo(h) {
+    sf = 2.85;
+    translate([10, 0, h]) mirror([0, 0, 1]) linear_extrude(height=logo_depth) scale([sf, sf]) import("Dlogo.svg", center=true);
+}
+
 module lid_text(h) {
     sf = lid_text_scale;
     translate([0, 0, h]) mirror([0, 0, 1]) linear_extrude(height=logo_depth) scale([sf, sf]) text(text=lid_text, font=lid_text_font, halign="center", valign="center");
@@ -305,6 +312,8 @@ module lid(h) {
             jupiter_logo(h);
         } else if (lid_design=="beeg") {
             beeg_logo(h);
+        } else if (lid_design=="scratch") {
+            scratch_logo(h);
         }
     }
 }
