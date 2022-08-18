@@ -1,7 +1,9 @@
 // geodesic sphere from https://www.thingiverse.com/thing:1484333
 use <geodesic_sphere.scad>;
 
-token_radius = 12.5;
+size = "medium"; //[tiny,small,medium,large,huge,gargantuan]
+medium_radius = 12.5;
+token_radius = str(size) == str("tiny") ? medium_radius/2 : (str(size) == str("large") ? medium_radius*2 : (str(size) == str("huge") ? medium_radius*3 : (str(size) == str("gargantuan") ? medium_radius*4 : medium_radius)));
 token_height = 2;
 token_buffer = 0.2;
 wall_thickness = 1.2;
