@@ -1,5 +1,9 @@
+use <geodesic_sphere.scad>
+
 container_width = 150;
 container_height = 150;
+
+render_obj = "complete"; //[complete, braces, surface]
 
 paint_bottle_radius = 12.75;
 surface_thickness = 1.6;
@@ -25,14 +29,6 @@ module cutout(r, h) {
     }
 }
 
-module cutout_array_square() {
-    for(x=[0:count_wide-1]) {
-        for(y=[0:count_high-1]) {
-            translate([x*sep+sep/2, y*sep+sep/2, 0]) cutout(paint_bottle_radius, surface_thickness);
-        }
-    }
-}
-
 module part_array() {
     sep_offset_x = sep * cos(30);
     sep_offset_y = sep * sin(60);
@@ -50,16 +46,20 @@ module part_array() {
     }
 }
 
-module cutout_array_hex() {
+module cutout_array_hex()
     part_array() cutout(paint_bottle_radius, surface_thickness);
-}
+
+module rounded_cube(dims, r)
+    hull() 
+        for (x=[r, dims[0]-r], y=[r, dims[1]-r], z=[r, dims[2]-r])
+            translate([x, y, z]) geodesic_sphere(r, $fn=$fn/2);
 
 module cross_brace() {
     for(theta=[-60, 60]) {
         rotate([0, 0, theta]) {
-            translate([(sep-surface_thickness)/2, -brace_width/2, 0]) cube([surface_thickness, brace_width, paint_bottle_radius*2]);
-            translate([-(sep+surface_thickness)/2, -brace_width/2, 0]) cube([surface_thickness, brace_width, paint_bottle_radius*2]);
-            translate([-(sep+surface_thickness)/2, -brace_width/2, paint_bottle_radius*2]) cube([sep+surface_thickness, brace_width, surface_thickness]);
+            translate([(sep-surface_thickness)/2, -brace_width/2, 0]) rounded_cube([surface_thickness, brace_width, paint_bottle_radius*2], surface_thickness/2);
+            translate([-(sep+surface_thickness)/2, -brace_width/2, 0]) rounded_cube([surface_thickness, brace_width, paint_bottle_radius*2], surface_thickness/2);
+            translate([-(sep+surface_thickness)/2, -brace_width/2, paint_bottle_radius*2-surface_thickness]) rounded_cube([sep+surface_thickness, brace_width, surface_thickness], surface_thickness/2);
         }
     }
 }
@@ -81,5 +81,16 @@ module bottle_array() {
     }
 }
 
-part_array() cross_brace();
-bottle_array($fn=48);
+if (render_obj == "complete") {
+    union() {
+        part_array() cross_brace($fn=24);
+        bottle_array($fn=48);
+    }
+} else if (render_obj == "braces") {
+    part_array() cross_brace($fn=24);
+} else {
+    difference() {
+        bottle_array($fn=48);
+        part_array() cross_brace($fn=24);
+    }
+}
