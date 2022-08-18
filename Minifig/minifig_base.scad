@@ -106,7 +106,7 @@ if (indexed_array == "yes")
         {
             index = i*(rows)+j+1;
             font_offset = index >=10 ? font_size*2/3 : font_size/3;
-            translate([-1*(i*base_radius*2+array_gap*i), -1*(j*base_radius*2+array_gap*j), 0])
+            translate([-i*base_radius*2-array_gap*i, -j*base_radius*2-array_gap*j, 0])
             difference()
             {
                 minifig_base();
