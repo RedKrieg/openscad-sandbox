@@ -18,8 +18,8 @@ logo_thickness = 0.5;
 handle_opening_max_width = 45;
 handle_opening_max_height = 120;
 
-svg_filename = "medusa.svg";
-svg_scale = 1.8;
+svg_filename = "whoopsie.svg";
+svg_scale = 0.5;
 
 $fn = $preview ? 25 : 255;
 
