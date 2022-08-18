@@ -17,13 +17,13 @@ $fn = 64;
 radius = 12.5;
 
 // Number of columns when indexing
-columns = 2;
+columns = 3;
 
 // Number of rows when indexing
 rows = 4;
 
 // Height of base
-base_height = 3; //[2:0.1:5]
+base_height = 2; //[2:0.1:5]
 
 // Size of gap
 gap_size = 0.6; //[0.1:0.1:3]
