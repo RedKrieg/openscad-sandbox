@@ -9,12 +9,12 @@ use <wrap.scad>
 //inner_wall_height = 105;
 
 // slim "white claw" can
-//inner_diameter = 58.2;
-//inner_wall_height = 140;
+inner_diameter = 58.4;
+inner_wall_height = 140;
 
 // 22oz yankee candle
-inner_diameter = 99.0;
-inner_wall_height = 110;
+//inner_diameter = 99.0;
+//inner_wall_height = 110;
 
 // outer shell wall thickness
 wall_thickness = 8;
@@ -23,14 +23,16 @@ handle_opening_max_width = 45;
 handle_opening_max_height = 120;
 render_handle = false;
 
+vent_radius = 1.6;
+
 // I recommend max resolution of 200x200px for images
-png_filename = "heartagram.png";
+png_filename = "dolphins_66.png";
 // 1.0 scale is 1px/mm, shrink as needed based on your outer circumference
-png_scale = 1.0;
+png_scale = 0.6;
 // by default, white will be deeply embossed and black will be at the outer radius.  setting this to true will invert the depth map
 png_invert = false;
 // maximum cut depth in to surface
-png_depth = 4;
+png_depth = 0.6;
 
 // this is due to the way 0 width walls work in openscad, added to the radius of the image
 nonzero_buffer = 0.05;
@@ -94,6 +96,7 @@ difference() {
     } else {
        coozy_shell();
     }
+    translate([inner_diameter/2, 0, wall_thickness]) cylinder(r=vent_radius, h=inner_wall_height);
     wrap3d(
         r=inner_diameter/2+wall_thickness+nonzero_buffer,
         h=inner_wall_height+wall_thickness,

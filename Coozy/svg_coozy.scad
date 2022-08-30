@@ -9,7 +9,7 @@ use <wrap.scad>
 //inner_wall_height = 105;
 
 // slim "white claw" can
-inner_diameter = 58.2;
+inner_diameter = 58.4;
 inner_wall_height = 140;
 
 wall_thickness = 8;
@@ -18,8 +18,10 @@ logo_thickness = 0.5;
 handle_opening_max_width = 45;
 handle_opening_max_height = 120;
 
-svg_filename = "whoopsie.svg";
-svg_scale = 0.5;
+vent_radius = 1.6;
+
+svg_filename = "wesleeparound.svg";
+svg_scale = 2.0;
 
 $fn = $preview ? 25 : 255;
 
@@ -60,10 +62,11 @@ module mug() {
 difference() {
     //mug();
     coozy_shell();
+    translate([inner_diameter/2, 0, wall_thickness]) cylinder(r=vent_radius, h=inner_wall_height);
     wrap(
         r=inner_diameter/2+wall_thickness,
         h=inner_wall_height+wall_thickness,
         depth=logo_thickness,
         fn=$fn
-    ) scale(svg_scale) import(svg_filename, center=true);
+    ) scale([svg_scale, svg_scale, 1]) import(svg_filename, center=true);
 }
