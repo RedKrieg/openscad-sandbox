@@ -1,7 +1,7 @@
 //which object should be rendered
 render_object = "lid"; //[die, figure, lid, pads]
 //if rendering lid, which design to put on it
-lid_design = "scratch"; //[none, dnd, cr, web, text]
+lid_design = "dnd"; //[none, dnd, cr, web, text]
 //text to put on lid
 lid_text = "BEEG Dice";
 //font for lid text
@@ -10,11 +10,11 @@ lid_text_font = "Fira Sans:style=Regular";
 lid_text_scale = 1.3; //[0.1:0.1:8]
 //depth of logo when using a lid design
 logo_depth = 0.3; //[0.1:0.1:1.0]
-//actual largest distance between two points on a set of 7 rpg dice (12.2mm measured, 13 jumbo)
-die_radius_inner = 12.2; //[0.1:0.1:15]
+//actual largest distance between two points on a set of 7 rpg dice (12.2mm measured, 14.6 jumbo)
+die_radius_inner = 13.6; //[0.1:0.1:15]
 die_radius = die_radius_inner/cos(30);
 //height of tallest die when lying flat in pocket (21mm measured, 25 jumbo)
-die_pocket_height = 21; //[0.1:0.1:30]
+die_pocket_height = 26; //[0.1:0.1:30]
 //height of figure when lying flat in pocket
 figure_pocket_height = 26; //[0.1:0.1:40]
 //wall thickness between cells
@@ -24,11 +24,11 @@ figure_tray_depth = figure_pocket_height + wall_thickness;
 //connection clip height
 connector_height = 2.0; //[0.1:0.1:5]
 //connection clip width at top
-connector_width_top = 4; //[0.1:0.1:5]
+connector_width_top = 5; //[0.1:0.1:5]
 //connection clip width at bottom
-connector_width_bottom = 3; //[0.1:0.1:5]
+connector_width_bottom = 4; //[0.1:0.1:5]
 //extra space to make for an easier fit when clipping together
-connector_gap_offset = 0.25; //[0.05:0.05:0.5]
+connector_gap_offset = 0.20; //[0.05:0.05:0.5]
 //length of tongue/groove around the outside in degrees
 connector_degrees = 10; //[6:0.5:18]
 //number of connectors
@@ -44,7 +44,7 @@ shell_grip_ratio = 10;
 //what type of grip pattern should be used
 grip_style = "helical"; //[vertical, helical]
 //how much to slant helical grooves, related to shell_grip_count
-grip_helix_offset = 1; //[1:1:6]
+grip_helix_offset = render_object=="lid" ? 1 : 4; //[1:1:6]
 //radius of the magnet
 magnet_radius = 3.05;
 //height of the magnet
@@ -153,10 +153,10 @@ module connector_base(gap_offset) {
     }
 }
 
-module wedge(h, r, theta, scale=1) {
+module wedge(h, r, theta, wedge_scale=1) {
     wedge_vectors = [[0, 0], [r, 0], [r*cos(theta), r*sin(theta)]];
     wedge_center = [(r+r*cos(theta))/3, r*sin(theta)/3];
-    translate(wedge_center) linear_extrude(height=h, scale=scale) translate(-wedge_center) polygon(wedge_vectors);
+    translate(wedge_center) linear_extrude(height=h, scale=wedge_scale) translate(-wedge_center) polygon(wedge_vectors);
 }
 
 module connector_tongue() {
@@ -164,7 +164,7 @@ module connector_tongue() {
         connector_base(0);
         step = 360/connector_count;
         for (theta=[step:step:360]) {
-            rotate([0, 0, theta]) wedge(h=connector_height, r=connector_top_outer_radius*2, theta=step-connector_degrees, scale=1.05);
+            rotate([0, 0, theta]) wedge(h=connector_height, r=connector_top_outer_radius*2, theta=step-connector_degrees, wedge_scale=1.05);
         }
     }
 }
@@ -186,7 +186,7 @@ module connector_groove() {
             step = 360/connector_count;
             for (theta=[step:step:360]) {
                 //fudge factor to fix 0 width wall between gaps
-                rotate([0, 0, theta+0.01]) wedge(h=connector_height+connector_gap_offset*2, r=connector_top_outer_radius*2, theta=step-connector_degrees-0.5);
+                rotate([0, 0, theta+0.01]) wedge(h=connector_height+connector_gap_offset*2, r=connector_top_outer_radius*2, theta=step-connector_degrees-0.5, wedge_scale=1);
             }
         }
     }
@@ -226,7 +226,7 @@ module figure_tray(depth) {
 
 // SVG NOT INCLUDED FOR LICENSING REASONS
 module dnd_logo(h) {
-    sf = 0.18;
+    sf = 0.2;
     translate([0, 0, h]) mirror([0, 0, 1]) linear_extrude(height=logo_depth) scale([sf, sf]) import("dnd_logo.svg", center=true);
 }
 
