@@ -13,7 +13,7 @@ logo_depth = 0.3; //[0.1:0.1:1.0]
 //actual largest distance between two points on a set of 7 rpg dice (12.2mm measured, 14.6 jumbo)
 die_radius_inner = 13.6; //[0.1:0.1:15]
 die_radius = die_radius_inner/cos(30);
-//height of tallest die when lying flat in pocket (21mm measured, 25 jumbo)
+//height of tallest die when lying flat in pocket (21mm measured, 25 jumbo, 26 metal)
 die_pocket_height = 26; //[0.1:0.1:30]
 //height of figure when lying flat in pocket
 figure_pocket_height = 26; //[0.1:0.1:40]
