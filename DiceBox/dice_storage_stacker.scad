@@ -10,7 +10,7 @@ lid_text_font = "Fira Sans:style=Regular";
 lid_text_scale = 1.3; //[0.1:0.1:8]
 //depth of logo when using a lid design
 logo_depth = 0.3; //[0.1:0.1:1.0]
-//actual largest distance between two points on a set of 7 rpg dice (12.2mm measured, 14.6 jumbo)
+//actual largest distance between two points on a set of 7 rpg dice (12.2mm measured, 14.6 jumbo, 13.6 metal)
 die_radius_inner = 13.6; //[0.1:0.1:15]
 die_radius = die_radius_inner/cos(30);
 //height of tallest die when lying flat in pocket (21mm measured, 25 jumbo, 26 metal)
