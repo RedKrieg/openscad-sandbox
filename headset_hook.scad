@@ -1,6 +1,6 @@
-width = 24;
+width = 25.4;
 thickness = 5.3;
-headphone_width = 60;
+headphone_width = 46;
 
 screw_head_radius = 4.2;
 screw_head_height = 3.8;

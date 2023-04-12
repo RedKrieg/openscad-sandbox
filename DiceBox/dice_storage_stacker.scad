@@ -1,7 +1,7 @@
 //which object should be rendered
 render_object = "lid"; //[die, figure, lid, pads]
 //if rendering lid, which design to put on it
-lid_design = "dnd"; //[none, dnd, cr, web, text]
+lid_design = "none"; //[none, dnd, cr, web, text]
 //text to put on lid
 lid_text = "BEEG Dice";
 //font for lid text
