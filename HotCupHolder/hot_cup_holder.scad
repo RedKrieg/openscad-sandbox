@@ -1,5 +1,5 @@
 holder_radius_upper = 40.0;
-holder_radius_lower = 34.0;
+holder_radius_lower = 33.2;
 holder_height = 70.0;
 holder_thickness = 1.6;
 
