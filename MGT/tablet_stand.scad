@@ -5,21 +5,21 @@ wall_height_inner = 55;
 wall_height_outer = 90;
 
 slot_depth = 14;
-slot_height = 16;
+slot_height = 16.2;
 
 surface_to_slot = 21;
 
 slot_depth_outer = 30;
 
 extrude_thickness = slot_height;
-chamfer_depth = 7.75;
+table_chamfer_depth = 7.75;
 
 min_thickness = 8;
 min_thickness_45 = min_thickness*sqrt(2);
 
-strut_thickness = 8; //old min_thickness, need to rename for not to have break stuff and for more accurate
+strut_thickness = 7; //old min_thickness, need to rename for not to have break stuff and for more accurate
 
-rounding_radius = 1.4;
+rounding_radius = 0.6;
 
 magnet_diameter = 12.2;
 magnet_height = 5;
@@ -39,14 +39,14 @@ tablet_lip = 8;
 text_depth = 0.3;
 text_size = slot_height/4;
 text_font = "Ubuntu:style=Bold";//"DejaVu Sans:style=Bold";
-//this 1.83 here sucks, can't figure out which of my measurements is off.  angle is not exactly 15 degrees on the back surface
-text_fudge = [-2, 0, 1.83];
-//same for the 0.21 degree offset here
-text_rotation = [90, 0, 180-tablet_angle-0.21];
+//this 0.9889 here sucks, can't figure out which of my measurements is off.  angle is not exactly 15 degrees on the back surface
+text_fudge = [-2, 0, 0.9889];
+//same for the 0.0979 degree offset here.  should be able to solve for this
+text_rotation = [90, 0, 180-tablet_angle-0.0979];
 
 $fn = $preview ? 12 : 48;
 
-edge_depth = slot_depth-slot_depth_outer-surface_to_slot+chamfer_depth;
+edge_depth = slot_depth-slot_depth_outer-surface_to_slot+table_chamfer_depth;
 
 //normalize a vector (length to 1)
 function normalize(v) = v / norm(v);
@@ -119,8 +119,8 @@ module magnet_cutout() {
 
 // this feels dumb but was the only way I could think to use relative offsetting in openscad
 function tablet_stand_profile() = let(
-    p0 = [chamfer_depth, edge_depth], //bottom edge of table chamfer vertical
-    p1 = [chamfer_depth, edge_depth - chamfer_depth * tan(tablet_angle)], //back of tablet, top
+    p0 = [table_chamfer_depth, edge_depth], //bottom edge of table chamfer vertical
+    p1 = [table_chamfer_depth, edge_depth - table_chamfer_depth * tan(tablet_angle)], //back of tablet, top
     p2 = [tablet_contact_hypotenuse * cos(tablet_angle), edge_depth - tablet_contact_hypotenuse * sin(tablet_angle)], //back of tablet, bottom
     p3 = p2 - tablet_depth * [sin(tablet_angle), cos(tablet_angle)], //bottom of tablet, front
     p4 = p3 + tablet_lip * [-cos(tablet_angle), sin(tablet_angle)], //top of lip, inner
@@ -231,7 +231,7 @@ complex_hulls = [
     [   //more top strut
         rounded_points[12],
         strut_points[12],
-        strut_points[11]
+        rounded_points[10]
     ],
     [   //horizontal bracer
         tablet_back_points[2],
