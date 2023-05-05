@@ -3,14 +3,14 @@ drive_side_length = 5.6;
 inner_diameter_low = drive_side_length*sqrt(2);
 inner_diameter_high = inner_diameter_low;
 drive_height = 8;
-cone_height = 2.4;
-wall_thickness = 1.0;
-prop_diameter = 90;
+cone_height = 1.6;
+wall_thickness = 0.8;
+prop_diameter = 75;
 prop_thickness = 0.42;
 prop_angle = 45;
 prop_twist = 20;
-prop_count = 5;
-prop_scaler = 3;
+prop_count = 3;
+prop_scaler = 3
 
 module core(dsl, wt, dh, ch) {
     r = dsl*sqrt(2)/2+wt;
