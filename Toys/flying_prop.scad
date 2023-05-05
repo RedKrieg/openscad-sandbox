@@ -10,7 +10,7 @@ prop_thickness = 0.42;
 prop_angle = 45;
 prop_twist = 20;
 prop_count = 3;
-prop_scaler = 3
+prop_scaler = 3;
 
 module core(dsl, wt, dh, ch) {
     r = dsl*sqrt(2)/2+wt;
@@ -27,6 +27,7 @@ module core(dsl, wt, dh, ch) {
 }
 
 module prop_profile_squished(ir, pr, ph) {
+    //this is a sphere scaled to match the prop radius in X/Y and the prop height in Z
     rotate_extrude() difference() {
         scale([pr, ph/2]) circle(1);
         translate([-pr*2+ir, -ph/2]) square([pr*2, ph]);
@@ -46,12 +47,16 @@ module prop_profile(ir, pr, ph) {
 
 module blade_flat(ir, pr, ph, pt, pc, pa, scaler, twist) {
     translate([0, -pt/2, -ph*sin(pa)]) union() {
-        //cube([pr, pt, ph*2*sin(pa)]);
-        rotate([0, -90, 0]) translate([ph*sin(pa), pt/2, 0]) mirror([0, 0, 1]) linear_extrude(pr, twist=twist*scaler, slices=$fn, scale=[scaler, 1]) translate([-ph*sin(pa), -pt/2]) let(r=pt/2) hull() {
+        rotate([0, -90, 0]) //orient horizontally
+        translate([ph*sin(pa), pt/2, 0]) //uncenter
+        mirror([0, 0, 1]) //rotate in the opposite direction
+        linear_extrude(pr, twist=twist*scaler, slices=$fn, scale=[scaler, 1]) //twist here should not need the scaler multiplier, but there's something going on that makes this the only way I can compensate for the scale.  I need to implement my own extrude function later to fix this as it breaks down when scale is above 3 or with large twist values.
+        translate([-ph*sin(pa), -pt/2]) //center for scaling during extrude
+        let(r=pt/2) hull() { //just a simple rounded rectangle between two points
             translate([r, r]) circle(r);
             translate([ph*2*sin(pa)-r, r]) circle(r);
         }
-        translate([0, 0, ph*sin(pa)]) rotate([-90, 0, 0]) scale([ir-0.1,ph,pt]) cylinder(r=sin(pa), h=1);
+        translate([0, 0, ph*sin(pa)]) rotate([-90, 0, 0]) scale([ir-0.1,ph,pt]) cylinder(r=sin(pa), h=1); //this is just a little extra material in case the prop is wider than the core
     }
 }
 
