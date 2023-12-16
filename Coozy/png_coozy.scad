@@ -4,17 +4,7 @@ use <scad-utils/morphology.scad>
 use <list-comprehension-demos/sweep.scad>
 use <wrap.scad>
 
-// standard 12 oz beer can
-//inner_diameter = 66.8;
-//inner_wall_height = 105;
-
-// slim "white claw" can
-inner_diameter = 58.4;
-inner_wall_height = 140;
-
-// 22oz yankee candle
-//inner_diameter = 99.0;
-//inner_wall_height = 110;
+coozy_type = "standard"; // [standard,slim,yankee]
 
 // outer shell wall thickness
 wall_thickness = 8;
@@ -27,21 +17,52 @@ vent_radius = 1.6;
 
 // I recommend max resolution of 200x200px for images
 png_filename = "dolphins_66.png";
-// 1.0 scale is 1px/mm, shrink as needed based on your outer circumference
-png_scale = 0.6;
-// by default, white will be deeply embossed and black will be at the outer radius.  setting this to true will invert the depth map
+//in pixels
+png_height = 180;
+//mm above and below to edge of surface
+png_margin = 12;
+// by default, white will be deeply embossed and black will be at the outer radius.  setting this to true will invert the depth map, but you're better off inverting your image
 png_invert = false;
-// maximum cut depth in to surface
+// maximum cut depth in to surface in mm
 png_depth = 0.6;
 
-// this is due to the way 0 width walls work in openscad, added to the radius of the image
-nonzero_buffer = 0.05;
+/* [Hidden] */
+// standard 12 oz beer can
+standard_inner_diameter = 66.8;
+standard_inner_wall_height = 105;
+
+// slim "white claw" can
+slim_inner_diameter = 58.4;
+slim_inner_wall_height = 140;
+
+// 22oz yankee candle
+yankee_inner_diameter = 99.0;
+yankee_inner_wall_height = 110;
+
+inner_diameter = coozy_type == "standard" ? standard_inner_diameter : coozy_type == "slim" ? slim_inner_diameter : yankee_inner_diameter;
+inner_wall_height = coozy_type == "standard" ? standard_inner_wall_height : coozy_type == "slim" ? slim_inner_wall_height : yankee_inner_wall_height;
+
+/*
+Notes on scaling:
+
+1.0 scale is 1px/mm, shrink as needed based on your outer circumference.
+
+for example, if your image is 131px tall and you would like it to fit a "standard" coozy (105mm flat wall) with 12mm margins at the top and bottom, your scaling factor should be:
+    png_scale = (105 - 12 * 2) / 131;
+
+*/
+png_scale = (inner_wall_height - png_margin * 2) / png_height;
 
 // this just needs to be massive enough to get 100% coverage of the entire surface of the coozy
 cut_cube_size = (inner_diameter * 2 + inner_wall_height * 2) * PI;
 
 // use a high resolution for renders.
 $fn = $preview ? 25 : 255;
+// degrees per segment
+segment_arc = 360/$fn;
+// I don't yet know why I need this, but it keeps the cut from being inside the surface of the cylinder.  It's added to the cut_radius below
+nonzero_buffer = png_depth/PI;
+cut_radius = (inner_diameter/2 + wall_thickness + nonzero_buffer);
 
 module coozy_shell() {
     rotate_extrude() {
@@ -84,9 +105,9 @@ module mirror_image() {
     // we will be using the "inner" surface to do a boolean difference on the surface of our coozy, so it needs to be mirrored.  we also need it in the negative Z axis for wrap, so we kill two birds with one stone here
     mirror([0, 0, 1])
         // for some reason the surface function with inversion on renders in negative Z, so we have to move it to match the non-inverted surface.  center doesn't affect the Z axis for this function because...  reasons?
-        translate([0, 0, png_invert ? png_depth : 0])
-            // scale results in a height map ranging from 0->100 (black->white), so we first divide by 100 then multiply by the desired thickness
-            scale([png_scale, png_scale, 1/100*png_depth])
+        translate([0, 0, png_invert ? png_depth - 0.227 : 0])
+            // surface results in a height map ranging from 0->100 (black->white), so we first divide by 100 then multiply by the desired thickness
+            scale([png_scale, png_scale, png_depth/100])
                 surface(png_filename, center=true, invert=png_invert);
 }
 
@@ -96,10 +117,10 @@ difference() {
     } else {
        coozy_shell();
     }
-    translate([inner_diameter/2, 0, wall_thickness]) cylinder(r=vent_radius, h=inner_wall_height);
     wrap3d(
-        r=inner_diameter/2+wall_thickness+nonzero_buffer,
+        r=cut_radius,
         h=inner_wall_height+wall_thickness,
         fn=$fn
     ) mirror_image();
+    translate([0, 0, wall_thickness]) linear_extrude(inner_wall_height, twist=360, slices=$fn) translate([inner_diameter/2-vent_radius/2, 0]) circle(r=vent_radius);
 }

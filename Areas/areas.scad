@@ -1,13 +1,14 @@
 inch=25.4;
 stroke=1.2;
 height=1.2;
-font_size=inch/8;
+font_size=inch/6;
+font_face="PT Mono:style=Bold";
 $fn=40;
 
 module tag(txt) {
-    rotate([90, 0, 0]) difference(){
+    rotate([0, 0, 180]) difference(){
         cylinder(stroke, inch/4, inch/4);
-        translate([0, 0, stroke/2]) linear_extrude(height=stroke/2) text(txt, size=font_size, font="FreeSerif", valign="bottom", halign="center");
+        translate([0, 0, stroke/2]) linear_extrude(height=stroke/2) text(txt, size=font_size, font=font_face, valign="bottom", halign="center");
         translate([-inch/4, -inch/2, 0]) cube([inch/2, inch/2, stroke]);
     }
 }
@@ -44,8 +45,8 @@ module effect_radius(r) {
             effect_radius_base(boxes, stroke);
             effect_radius_base(boxes, 0);
         }
-        translate([0, -inch*boxes, height]) tag(str(r));
-        rotate([0, 0, 180]) translate([0, -inch*boxes, height]) tag(str(r));
+        translate([0, -inch*boxes-stroke, 0]) tag(str(r));
+        rotate([0, 0, 180]) translate([0, -inch*boxes-stroke, 0]) tag(str(r));
     }
 }
 
@@ -96,19 +97,19 @@ module square_base(boxes, stroke) {
     }
 }
 
-module square(l) {
+module square_area(l) {
     boxes = l/5;
     union() {
         difference() {
             square_base(boxes, stroke);
             square_base(boxes, 0);
         }
-        translate([boxes/2*inch, 0, height]) tag(str(l));
-        translate([boxes/2*inch, inch*boxes, height]) rotate([0, 0, 180]) tag(str(l));
+        translate([boxes/2*inch, -stroke, 0]) tag(str(l));
+        translate([boxes/2*inch, inch*boxes+stroke, 0]) rotate([0, 0, 180]) tag(str(l));
     }
 }
-//effect_radius(10);
+//effect_radius(15);
 //status_box("CON");
-//diagonal_cone(15);
+//diagonal_cone(30);
 //straight_cone(15);
-square(60);
+square_area(10);

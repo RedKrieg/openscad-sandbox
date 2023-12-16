@@ -16,6 +16,7 @@ bracket_center_radius = 65; // [45:69.8]
 // distance between center of lock and center of lock rail
 lock_center_radius = 58.85; // [54:82]
 center_radius = (bracket_center_radius + lock_center_radius) / 2;
+clip_rotation = asin((bracket_center_radius - center_radius)/centerdiff);
 $fn=100; //smoother circles
 
 module clip() //this is one side of the full clip
@@ -58,6 +59,6 @@ module clip() //this is one side of the full clip
 union() {
     cube([clip_thickness, center_radius*2, height], center=true); //connector between sides
     //these rotate the clips such that the distance from 0 to the center of the bracket clip is bracket_center_radius.  because of the center_radius translation, this results in the lock clip being correctly centered
-    translate([0,-center_radius,0]) rotate([0, 0, asin((bracket_center_radius - center_radius)/centerdiff)]) clip();
-    translate([0,center_radius,0]) rotate([0, 0, -asin((bracket_center_radius - center_radius)/centerdiff)]) clip();
+    translate([0,-center_radius,0]) rotate([0, 0, clip_rotation]) clip();
+    translate([0,center_radius,0]) rotate([0, 0, -clip_rotation]) clip();
 }

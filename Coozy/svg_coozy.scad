@@ -5,23 +5,23 @@ use <list-comprehension-demos/sweep.scad>
 use <wrap.scad>
 
 // standard 12 oz beer can
-//inner_diameter = 66.8;
-//inner_wall_height = 105;
+inner_diameter = 66.8;
+inner_wall_height = 105;
 
 // slim "white claw" can
-inner_diameter = 58.4;
-inner_wall_height = 140;
+//inner_diameter = 58.4;
+//inner_wall_height = 140;
 
 wall_thickness = 8;
-logo_thickness = 0.5;
+logo_thickness = 0.4;
 
 handle_opening_max_width = 45;
 handle_opening_max_height = 120;
 
 vent_radius = 1.6;
 
-svg_filename = "wesleeparound.svg";
-svg_scale = 2.0;
+svg_filename = "grogmug.svg";
+svg_scale = 0.4;
 
 $fn = $preview ? 25 : 255;
 
@@ -62,7 +62,7 @@ module mug() {
 difference() {
     //mug();
     coozy_shell();
-    translate([inner_diameter/2, 0, wall_thickness]) cylinder(r=vent_radius, h=inner_wall_height);
+    translate([0, 0, wall_thickness]) linear_extrude(inner_wall_height, twist=360, slices=$fn) translate([inner_diameter/2-vent_radius/2, 0]) circle(r=vent_radius);
     wrap(
         r=inner_diameter/2+wall_thickness,
         h=inner_wall_height+wall_thickness,
