@@ -60,8 +60,30 @@ module blade_flat(ir, pr, ph, pt, pc, pa, scaler, twist) {
     }
 }
 
+module blade_curved(ir, pr, ph, pt, pc, pa, scaler, twist) {
+    r_center=pr/2+pt/2;
+    x=ph*sin(pa);
+    y=sqrt(r_center*r_center-x*x);
+    mirror([1, 0, 0]) rotate([0, -90, 0]) linear_extrude(pr, twist=twist*scaler, slices=$fn, scale=[scaler, 1]) //twist here should not need the scaler multiplier, but there's something going on that makes this the only way I can compensate for the scale.  I need to implement my own extrude function later to fix this as it breaks down when scale is above 3 or with large twist values.
+        translate([0, -(r_center+y)/2]) union() {
+            intersection() {
+                difference() {
+                    circle(r_center+pt/2);
+                    circle(r_center-pt/2);
+                }
+                polygon([
+                    [0, 0],
+                    [-x*2, y*2],
+                    [x*2, y*2]
+                ]);
+            }
+            //translate([-x, y-pt/2]) circle(pt/2);
+            //translate([x, y-pt/2]) circle(pt/2);
+        }
+}
+
 module blade(ir, pr, ph, pt, pc, pa, scaler, twist) {
-    blade_flat(ir, pr, ph, pt, pc, pa, scaler, twist);
+    blade_curved(ir, pr, ph, pt, pc, pa, scaler, twist);
 }
 
 module prop(ir, pr, ph, pt, pc, pa, scaler, twist) {
@@ -73,6 +95,7 @@ module prop(ir, pr, ph, pt, pc, pa, scaler, twist) {
             }
         }
     }
+    //blade(ir, pr, ph, pt, pc, pa, scaler, twist);
 }
 
 mirror([1, 0, 0]) difference() {
