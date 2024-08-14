@@ -32,7 +32,7 @@ m3_washer_height = strut_depth - m3_brace_depth;
 tilt_angle = 36.8;
 
 radio_hole_separation = 28;
-radio_x_offset = 10;
+radio_x_offset = 18;
 
 module holes() {
     circle(d=hole_diameter);
@@ -238,7 +238,7 @@ if($preview) {
 } else {
     //side_bracket();
     //face_bracket();
-    //center_bracket();
+    center_bracket();
     //mounting_bracket();
-    angle_brace();
+    //angle_brace();
 }
