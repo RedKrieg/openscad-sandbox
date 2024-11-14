@@ -4,7 +4,7 @@ use <scad-utils/morphology.scad>
 use <list-comprehension-demos/sweep.scad>
 use <wrap.scad>
 
-coozy_type = "standard"; // [standard,slim,yankee]
+coozy_type = "slim"; // [standard,slim,yankee]
 
 // outer shell wall thickness
 wall_thickness = 8;
@@ -16,13 +16,13 @@ render_handle = false;
 vent_radius = 1.6;
 
 // I recommend max resolution of 200x200px for images
-png_filename = "dolphins_66.png";
-//in pixels
-png_height = 180;
+png_filename = "windsor_fire.png";
+//in pixels, must be correct for margins to work properly
+png_height = 370;
 //mm above and below to edge of surface
-png_margin = 12;
+png_margin = 5;
 // by default, white will be deeply embossed and black will be at the outer radius.  setting this to true will invert the depth map, but you're better off inverting your image
-png_invert = false;
+png_invert = true;
 // maximum cut depth in to surface in mm
 png_depth = 0.6;
 
@@ -105,7 +105,7 @@ module mirror_image() {
     // we will be using the "inner" surface to do a boolean difference on the surface of our coozy, so it needs to be mirrored.  we also need it in the negative Z axis for wrap, so we kill two birds with one stone here
     mirror([0, 0, 1])
         // for some reason the surface function with inversion on renders in negative Z, so we have to move it to match the non-inverted surface.  center doesn't affect the Z axis for this function because...  reasons?
-        translate([0, 0, png_invert ? png_depth - 0.227 : 0])
+        translate([0, 0, png_invert ? png_depth : 0])
             // surface results in a height map ranging from 0->100 (black->white), so we first divide by 100 then multiply by the desired thickness
             scale([png_scale, png_scale, png_depth/100])
                 surface(png_filename, center=true, invert=png_invert);
