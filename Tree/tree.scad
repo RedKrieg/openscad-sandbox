@@ -126,11 +126,32 @@ module star() {
     trunk_cylinder(trunk_radius-trunk_radius_modifier*7);
 }
 
+// https://openhome.cc/eGossip/OpenSCAD/TextCircle.html
+module revolve_text(radius, chars) {
+    circumference = 2 * PI * radius;
+    chars_len = len(chars);
+    font_size = circumference / chars_len;
+    step_angle = 360 / chars_len;
+    for(i = [0 : chars_len - 1]) {
+        rotate(-i * step_angle)
+            translate([0, radius + font_size / 2, 0])
+                text(
+                    chars[i],
+                    font = "Ubuntu:style=Bold",
+                    size = font_size,
+                    valign = "center", halign = "center"
+                );
+    }
+}
+
 module base() {
-    union() {
-        cylinder(h=thickness, r=trunk_radius*2);
-        translate([0, 0, thickness]) cylinder(h=ring_spacer_height*5, r1=trunk_radius*2, r2=trunk_radius);
-        translate([0, 0, thickness+ring_spacer_height*5]) cylinder(h=thickness, r=trunk_radius-thickness);
+    difference() {
+        union() {
+            cylinder(h=thickness, r=trunk_radius*2);
+            translate([0, 0, thickness]) cylinder(h=ring_spacer_height*5, r1=trunk_radius*2, r2=trunk_radius);
+            translate([0, 0, thickness+ring_spacer_height*5]) cylinder(h=thickness, r=trunk_radius-thickness);
+        }
+        linear_extrude(clearance) mirror([1, 0, 0]) revolve_text(trunk_radius*2-9, "Design by RedKrieg.  ");
     }
 }
 
