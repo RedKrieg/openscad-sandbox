@@ -1,5 +1,6 @@
-$fs = 0.1;
-$fa = 1.0;
+// Which object should be rendered
+render_target = "base"; // [base, ring, star, all]
+ring_number = 0; // [0:6]
 
 base_width = 5.0;
 thickness = 1.6;
@@ -14,6 +15,9 @@ ring_spacer_height = 10.0;
 trunk_radius_modifier = thickness;
 
 star_radius = 15.25;
+
+$fs = 0.1;
+$fa = 1.0;
 
 smallest_branch = thickness/2;
 nub_size = thickness;
@@ -77,7 +81,7 @@ module trunk_cylinder(radius) {
     difference() {
         union() {
             cylinder(h=thickness, r=radius);
-            translate([0, 0, thickness]) cylinder(h=ring_spacer_height, r1=radius, r2=radius-thickness-trunk_radius_modifier);
+            translate([0, 0, thickness]) cylinder(h=ring_spacer_height, r1=radius, r2=radius-trunk_radius_modifier);
             translate([0, 0, thickness+ring_spacer_height]) cylinder(h=thickness, r=radius-thickness-trunk_radius_modifier);
         }
         cylinder(h=thickness, r=radius-thickness+clearance/4);
@@ -122,17 +126,34 @@ module star() {
     trunk_cylinder(trunk_radius-trunk_radius_modifier*7);
 }
 
-//rings
-for (radius=[trunk_radius:-trunk_radius_modifier:base_width]) {
-    translate([radius*100, 0, 0]) trunk_ring(radius, base_width, radius*5);
+module base() {
+    union() {
+        cylinder(h=thickness, r=trunk_radius*2);
+        translate([0, 0, thickness]) cylinder(h=ring_spacer_height*5, r1=trunk_radius*2, r2=trunk_radius);
+        translate([0, 0, thickness+ring_spacer_height*5]) cylinder(h=thickness, r=trunk_radius-thickness);
+    }
 }
-//base
-color("red") translate([300, 0, 0]) union() {
-    cylinder(h=thickness, r=trunk_radius*2);
-    translate([0, 0, thickness]) cylinder(h=ring_spacer_height*3, r1=trunk_radius*2, r2=trunk_radius-thickness);
-    translate([0, 0, thickness+ring_spacer_height*3]) cylinder(h=thickness, r=trunk_radius-thickness);
+
+module render_all() {
+    //rings
+    for (radius=[trunk_radius:-trunk_radius_modifier:base_width]) {
+        translate([radius*100, 0, 0]) trunk_ring(radius, base_width, radius*5);
+    }
+    //base
+    color("red") translate([300, 0, 0]) base();
+    //star
+    color("gold") translate([200, 0, 0]) star();
+    //empty topper
+    translate([150, 0, 0]) trunk_cylinder(trunk_radius-trunk_radius_modifier*7);
 }
-//star
-color("gold") translate([200, 0, 0]) star();
-//empty base
-translate([150, 0, 0]) trunk_cylinder(trunk_radius-trunk_radius_modifier*7);
+
+if (render_target == "all") {
+    render_all();
+} else if (render_target == "base") {
+    color("red") base();
+} else if (render_target == "ring") {
+    radius = trunk_radius-trunk_radius_modifier*ring_number;
+    trunk_ring(radius, base_width, radius*5);
+} else if (render_target == "star") {
+    color("gold") star();
+}
