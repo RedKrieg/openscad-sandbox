@@ -151,7 +151,7 @@ module base() {
             translate([0, 0, thickness]) cylinder(h=ring_spacer_height*5, r1=trunk_radius*2, r2=trunk_radius);
             translate([0, 0, thickness+ring_spacer_height*5]) cylinder(h=thickness, r=trunk_radius-thickness);
         }
-        linear_extrude(clearance) mirror([1, 0, 0]) revolve_text(trunk_radius*2-9, "Design by RedKrieg.  ");
+        linear_extrude(clearance) mirror([1, 0, 0]) revolve_text(trunk_radius*2-10, "Design by RedKrieg  ");
     }
 }
 
