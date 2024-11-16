@@ -170,8 +170,12 @@ module star() {
         // create a mirror of the first star along the z axis
         mirror([0, 0, 1]) translate([0, 0, thickness/2]) linear_extrude(height = star_radius/4, scale = 0.0) round_off(thickness/2) polygon(star_points);
     }
-    // base for the star, 7 here depends on tree_radius but I haven't bothered calculating it, so 7 it is.
-    trunk_cylinder(trunk_radius-trunk_radius_modifier*7);
+    difference() {
+        // base for the star, 7 here depends on tree_radius but I haven't bothered calculating it, so 7 it is.
+        trunk_cylinder(trunk_radius-trunk_radius_modifier*7);
+        // the cylinder core fails to render because of the r2 value being negative above, cut out some space anyway
+        cylinder(h=thickness*2, r=trunk_radius-trunk_radius_modifier*7-thickness);
+    }
 }
 
 // module used for maker's mark on the base copied from
@@ -228,5 +232,6 @@ if (render_target == "all") {
     radius = trunk_radius-trunk_radius_modifier*ring_number;
     trunk_ring(radius, base_width, radius*5);
 } else if (render_target == "star") {
-    color("gold") star();
+    // rotate 45 degrees to keep the nozzle from tearing the points off the star
+    color("gold") rotate([0, 0, 45]) star();
 }
