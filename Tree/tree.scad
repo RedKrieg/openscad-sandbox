@@ -1,12 +1,12 @@
 // Which object should be rendered
-render_target = "base"; // [base, ring, star, all]
+render_target = "star"; // [base, ring, star, all]
 // When rendering rings, which ring
-ring_number = 0; // [0:6]
+ring_number = 6; // [0:6]
 
 // Width of the branches at the hinge location
 base_width = 5.0;
 // Branch thickness
-thickness = 1.6;
+thickness = 1.8;
 // Base branch angle
 branch_angle = 25.0;
 // Shrink needle by this amount per iteration
@@ -17,11 +17,11 @@ branch_depth = 6;
 clearance = 0.2;
 
 // Outer radius of ring 0
-trunk_radius = 15.0;
+trunk_radius = 16.85; // [10.0:0.2:25]
 // Number of branches to place per ring
 branches_per_ring = 7;
 // Vertical space between rings
-ring_spacer_height = 10.0;
+ring_spacer_height = 11;
 // Amount to shrink trunk radius by per ring
 trunk_radius_modifier = thickness;
 // Radius of star topper
@@ -132,7 +132,7 @@ module trunk_ring(radius, width, length) {
     // arrange brackets and branches around the trunk
     for (angle=[0:360/branches_per_ring:359.9]) {
         rotate([0, 0, angle]) translate([radius + cup_radius + clearance/2, 0, thickness/2]) {
-            color("green") branch(branch_depth, length, width, branch_angle);
+            #color("green") branch(branch_depth, length, width, branch_angle);
             color("brown") bracket(base_width);
         }
     }
@@ -155,8 +155,12 @@ module star() {
             star_radius * (angle % 72 == 0 ? 1.0 : 0.5) * sin(angle)
         ]
     ];
-    //stand the star upright
-    translate([0, 0, ring_spacer_height+thickness]) rotate([0, -90, 0]) union() {
+    //stand the star upright, elevate by magic value 0.592
+    // this value is determined experimentally because of the
+    // rounding on the polygon later.  I'm sick and don't want to calculate
+    translate([0, 0, ring_spacer_height+0.592]) rotate([0, -90, 0])
+    //render both halves of the star
+    union() {
         //move up half the thickness
         translate([0, 0, thickness/2])
             // extrude 1/4th of the radius to a point at the center
