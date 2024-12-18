@@ -1,6 +1,7 @@
 $fa = 2;
 $fs = 1;
 
+// https://www.printables.com/model/163228-geodesic-sphere-for-openscad
 // https://www.thingiverse.com/thing:1484333
 use <geodesic_sphere.scad>
 
