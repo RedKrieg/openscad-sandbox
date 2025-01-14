@@ -58,8 +58,8 @@ module upper_profile() {
     //inner rim
     translate([pin_diameter/2, surface_thickness]) square([surface_thickness, inner_brace_height]);
     //bearing block
-    hull() for (i=[-race_profile_size/2, race_profile_size/2])
-    translate([race_center+i-surface_thickness/2, surface_thickness]) square([surface_thickness, inner_brace_height]);
+    hull() for (x=[-race_profile_size/2, race_profile_size/2])
+    translate([race_center+x-surface_thickness/2, surface_thickness]) square([surface_thickness, inner_brace_height]);
     //middle rim
     translate([race_center/2, surface_thickness]) square([surface_thickness, inner_brace_height]);
 }
@@ -73,8 +73,8 @@ module lower_rib() {
     difference() {
         translate([inner_hole_radius, 0, surface_thickness]) cube([outer_r-inner_hole_radius-outer_rim_gap, surface_thickness, inner_brace_height]);
         //holes
-        for (i=[race_center-pin_offset_x, race_center+pin_offset_x])
-            translate([i, 0, pin_offset_y]) rotate([90, 0, 0]) cylinder(h=surface_thickness*2, d=pin_diameter+pin_clearance/2, center=true);
+        for (x=[race_center-pin_offset_x, race_center+pin_offset_x])
+            translate([x, 0, pin_offset_y]) rotate([90, 0, 0]) cylinder(h=surface_thickness*2, d=pin_diameter+pin_clearance/2, center=true);
     }
 }
 
@@ -138,8 +138,8 @@ module upper_race() {
 
 module bearing() {
     hull() {
-        for (i=[bearing_corner_radius, bearing_diameter-bearing_corner_radius]) rotate_extrude() {
-            translate([bearing_diameter/2-bearing_corner_radius, i]) circle(bearing_corner_radius);
+        for (y=[bearing_corner_radius, bearing_diameter-bearing_corner_radius]) rotate_extrude() {
+            translate([bearing_diameter/2-bearing_corner_radius, y]) circle(bearing_corner_radius);
         }
     }
 }
@@ -164,8 +164,8 @@ module clip() {
         for (i=[0,1])
             mirror([0, 0, i]) translate([0, pin_diameter, -pin_diameter-surface_thickness*1.5]) cube(pin_diameter*2, center=true);
         hull() {
-            for (i=[surface_thickness*1.5, pin_diameter*2])
-            translate([0, i, 0]) cylinder(h=pin_diameter*2, d=surface_thickness, center=true);
+            for (y=[surface_thickness*1.5, pin_diameter*2])
+            translate([0, y, 0]) cylinder(h=pin_diameter*2, d=surface_thickness, center=true);
         }
     }
 }
