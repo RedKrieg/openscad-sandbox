@@ -90,8 +90,8 @@ module upper_rib() {
     difference() {
         translate([pin_diameter/2, 0, -inner_brace_height]) cube([outer_r-pin_diameter/2, surface_thickness, inner_brace_height]);
         //holes
-        for (i=[race_center-pin_offset_x-pin_diameter, race_center+pin_offset_x+pin_diameter, race_center/2-pin_offset_x])
-            translate([i, 0, -pin_offset_y+surface_thickness]) rotate([90, 0, 0]) cylinder(h=surface_thickness*2, d=pin_diameter+pin_clearance/2, center=true);
+        for (x=[race_center-pin_offset_x-pin_diameter, race_center+pin_offset_x+pin_diameter, race_center/2+pin_offset_x, race_center/4])
+            translate([x, 0, -pin_offset_y+surface_thickness]) rotate([90, 0, 0]) cylinder(h=surface_thickness*2, d=pin_diameter+pin_clearance/2, center=true);
     }
 }
 
@@ -187,6 +187,7 @@ module assembly() {
         #color("#0000ff") rotate([0, 0, i*360/segments]) translate([0, 0, -surface_thickness]) upper_race();
     }
     for (i=[0:bearing_count-1])
+    //bearings
     color("#00ff00") rotate([0, 0, i*360/bearing_count]) translate([race_center, 0, -surface_thickness/2]) rotate([0, i%2?45:-45, 0]) translate([0, 0, -bearing_diameter/2]) bearing();
     translate([race_center-race_cutout_size/2, -surface_thickness*2, surface_thickness+inner_brace_height/2]) rotate([0, -45, 0]) clip();
     translate([race_center-race_cutout_size/2-pin_diameter, -surface_thickness*2, -inner_brace_height/2-surface_thickness]) rotate([0, -90, 0]) clip();
