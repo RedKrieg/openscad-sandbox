@@ -52,13 +52,13 @@ module lower_profile() {
 
 module upper_profile() {
     //flat
-    translate([pin_diameter/2, 0]) square([outer_r-pin_diameter/2-surface_thickness, surface_thickness]);
+    translate([pin_diameter/2, 0]) square([outer_r-pin_diameter/2+surface_thickness, surface_thickness]);
     //outer rim
-    translate([outer_r-surface_thickness, surface_thickness]) square([surface_thickness, inner_brace_height]);
+    translate([outer_r+surface_thickness, surface_thickness]) square([surface_thickness, inner_brace_height+outer_rim_height]);
     //outer chamfer
     hull() {
-        translate([outer_r-surface_thickness*2, 0]) square(surface_thickness);
-        translate([outer_r-surface_thickness, surface_thickness]) square(surface_thickness);
+        translate([outer_r, 0]) square(surface_thickness);
+        translate([outer_r+surface_thickness, surface_thickness]) square(surface_thickness);
     }
     //inner rim
     translate([pin_diameter/2, surface_thickness]) square([surface_thickness, inner_brace_height]);
@@ -88,12 +88,12 @@ module lower_rib_middle() {
 }
 
 module upper_rib_middle() {
-    translate([race_center/2, 0, -inner_brace_height]) cube([outer_r-race_center/2, surface_thickness, inner_brace_height]);
+    translate([race_center/2, 0, -inner_brace_height]) cube([outer_r-race_center/2+surface_thickness, surface_thickness, inner_brace_height]);
 }
 
 module upper_rib() {
     difference() {
-        translate([pin_diameter/2, 0, -inner_brace_height]) cube([outer_r-pin_diameter/2, surface_thickness, inner_brace_height]);
+        translate([pin_diameter/2, 0, -inner_brace_height]) cube([outer_r-pin_diameter/2+surface_thickness, surface_thickness, inner_brace_height]);
         //holes
         for (x=[race_center-pin_offset_x-pin_diameter, race_center+pin_offset_x+pin_diameter, race_center/2+pin_offset_x, race_center/4])
             translate([x, 0, -pin_offset_y+surface_thickness]) rotate([90, 0, 0]) cylinder(h=surface_thickness*2, d=pin_diameter+pin_clearance/2, center=true);
