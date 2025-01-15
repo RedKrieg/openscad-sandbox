@@ -6,7 +6,7 @@
 $fs = 0.2;
 $fa = 0.2;
 
-render_target = "assembly"; //[assembly,lower_race,upper_race,bearing,bearings,clip,clips]
+render_target = "assembly"; //[assembly,lower_race,upper_race,bearing,bearings,clip,clips,center_pin]
 
 outer_diameter = 477;
 outer_rim_height = 6;
@@ -95,6 +95,13 @@ module upper_rib() {
     }
 }
 
+module leg_cutout() {
+    hull() {
+        translate([0, 0, surface_thickness+inner_brace_height]) linear_extrude(height=support_height-inner_brace_height/2, twist=-360/segments/2) translate([race_center-surface_thickness*2, -surface_thickness*4]) square(surface_thickness*4);
+        translate([race_center-surface_thickness*2, -surface_thickness*4, surface_thickness+inner_brace_height+support_height]) cube(surface_thickness*8);
+    }
+}
+
 module lower_race() {
     difference() {
         union() {
@@ -111,10 +118,18 @@ module lower_race() {
                 mirror([0, 1, 0]) lower_rib_middle();
             }
             //foot
-            rotate([0, 0, 360/segments/2]) translate([race_center+surface_thickness, -surface_thickness, surface_thickness]) cube([inner_brace_height+surface_thickness, surface_thickness*2, support_height]);
+            rotate([0, 0, 360/segments/2]) union() {
+                //translate([race_center+surface_thickness, -surface_thickness, surface_thickness]) cube([inner_brace_height+surface_thickness, surface_thickness*2, support_height]);
+                //outer brace
+                translate([race_center+surface_thickness, surface_thickness, surface_thickness+inner_brace_height]) rotate([90, 0, 0]) linear_extrude(surface_thickness*2) polygon([[0,0],[race_center-inner_hole_radius-surface_thickness,0],[0,support_height-inner_brace_height]]);
+                //inner brace
+                translate([inner_hole_radius, surface_thickness, surface_thickness+inner_brace_height]) rotate([90, 0, 0]) linear_extrude(surface_thickness*2) polygon([[0,0],[race_center-inner_hole_radius,0],[race_center-inner_hole_radius,support_height/2]]);
+            }
         }
         //we have to cut this twice because for some reason cutting it now without cutting it up top in 2d makes the surface non-manifold
         rotate_extrude() race_cutout();
+        leg_cutout();
+        rotate([0,0,360/segments]) mirror([0, 1, 0]) leg_cutout();
     }
 }
 
@@ -144,13 +159,6 @@ module bearing() {
     }
 }
 
-module bearings() {
-    w = ceil(sqrt(bearing_count));
-    s = (bearing_diameter+surface_thickness);
-    for (x=[0:w-1], y=[0:w-1])
-        if (x*w+y<bearing_count) translate([x*s, y*s, 0]) bearing();
-}
-
 module clip() {
     difference() {
         rotate([-90, 0, 0]) union() {
@@ -170,6 +178,13 @@ module clip() {
     }
 }
 
+module bearings() {
+    w = ceil(sqrt(bearing_count));
+    s = (bearing_diameter+surface_thickness);
+    for (x=[0:w-1], y=[0:w-1])
+        if (x*w+y<bearing_count) translate([x*s, y*s, 0]) bearing();
+}
+
 module clips() {
     c = 5*segments;
     w = ceil(sqrt(c));
@@ -178,10 +193,16 @@ module clips() {
         if (x*w+y<c) translate([x*s, y*s, 0]) clip();
 }
 
+module center_pin() {
+    translate([0, 0, -0.4]) cylinder(h=0.4, d=pin_diameter+surface_thickness);
+    cylinder(h=surface_thickness+inner_brace_height, d=pin_diameter);
+}
+
 module assembly() {
-    //testing
+    //main race parts
     lower_race();
     translate([0, 0, -surface_thickness]) upper_race();
+    //the rest of the race
     for (i=[1:segments-1]) {
         #color("#ff0000") rotate([0, 0, i*360/segments]) lower_race();
         #color("#0000ff") rotate([0, 0, i*360/segments]) translate([0, 0, -surface_thickness]) upper_race();
@@ -189,8 +210,10 @@ module assembly() {
     for (i=[0:bearing_count-1])
     //bearings
     color("#00ff00") rotate([0, 0, i*360/bearing_count]) translate([race_center, 0, -surface_thickness/2]) rotate([0, i%2?45:-45, 0]) translate([0, 0, -bearing_diameter/2]) bearing();
+    //clips
     translate([race_center-race_cutout_size/2, -surface_thickness*2, surface_thickness+inner_brace_height/2]) rotate([0, -45, 0]) clip();
     translate([race_center-race_cutout_size/2-pin_diameter, -surface_thickness*2, -inner_brace_height/2-surface_thickness]) rotate([0, -90, 0]) clip();
+    translate([0, 0, -inner_brace_height-surface_thickness*2]) center_pin();
 }
 
 if (render_target=="assembly")
@@ -207,3 +230,5 @@ else if (render_target=="clip")
     clip();
 else if (render_target=="clips")
     clips();
+else if (render_target=="center_pin")
+    center_pin();
