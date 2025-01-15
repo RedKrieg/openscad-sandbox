@@ -52,9 +52,14 @@ module lower_profile() {
 
 module upper_profile() {
     //flat
-    translate([pin_diameter/2, 0]) square([outer_r-pin_diameter/2, surface_thickness]);
+    translate([pin_diameter/2, 0]) square([outer_r-pin_diameter/2-surface_thickness, surface_thickness]);
     //outer rim
     translate([outer_r-surface_thickness, surface_thickness]) square([surface_thickness, inner_brace_height]);
+    //outer chamfer
+    hull() {
+        translate([outer_r-surface_thickness*2, 0]) square(surface_thickness);
+        translate([outer_r-surface_thickness, surface_thickness]) square(surface_thickness);
+    }
     //inner rim
     translate([pin_diameter/2, surface_thickness]) square([surface_thickness, inner_brace_height]);
     //bearing block
@@ -232,3 +237,5 @@ else if (render_target=="clips")
     clips();
 else if (render_target=="center_pin")
     center_pin();
+else
+    upper_profile();
