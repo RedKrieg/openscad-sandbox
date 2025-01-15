@@ -95,7 +95,12 @@ module upper_rib() {
     difference() {
         translate([pin_diameter/2, 0, -inner_brace_height]) cube([outer_r-pin_diameter/2+surface_thickness, surface_thickness, inner_brace_height]);
         //holes
-        for (x=[race_center-pin_offset_x-pin_diameter, race_center+pin_offset_x+pin_diameter, race_center/2+pin_offset_x, race_center/4])
+        for (x=[
+            race_center-pin_offset_x-pin_diameter,
+            race_center+pin_offset_x+pin_diameter,
+            race_center/2+pin_offset_x,
+            race_center/4
+        ])
             translate([x, 0, -pin_offset_y+surface_thickness]) rotate([90, 0, 0]) cylinder(h=surface_thickness*2, d=pin_diameter+pin_clearance/2, center=true);
     }
 }
@@ -124,11 +129,10 @@ module lower_race() {
             }
             //foot
             rotate([0, 0, 360/segments/2]) union() {
-                //translate([race_center+surface_thickness, -surface_thickness, surface_thickness]) cube([inner_brace_height+surface_thickness, surface_thickness*2, support_height]);
                 //outer brace
                 translate([race_center+surface_thickness, surface_thickness, surface_thickness+inner_brace_height]) rotate([90, 0, 0]) linear_extrude(surface_thickness*2) polygon([[0,0],[race_center-inner_hole_radius-surface_thickness,0],[0,support_height-inner_brace_height]]);
                 //inner brace
-                translate([inner_hole_radius, surface_thickness, surface_thickness+inner_brace_height]) rotate([90, 0, 0]) linear_extrude(surface_thickness*2) polygon([[0,0],[race_center-inner_hole_radius,0],[race_center-inner_hole_radius,support_height/2]]);
+                translate([inner_hole_radius, surface_thickness, surface_thickness+inner_brace_height]) rotate([90, 0, 0]) linear_extrude(surface_thickness*2) polygon([[0,0],[race_center-inner_hole_radius-surface_thickness,0],[race_center-inner_hole_radius-surface_thickness,support_height-inner_brace_height]]);
             }
         }
         //we have to cut this twice because for some reason cutting it now without cutting it up top in 2d makes the surface non-manifold
@@ -191,7 +195,7 @@ module bearings() {
 }
 
 module clips() {
-    c = 5*segments;
+    c = 6*segments;
     w = ceil(sqrt(c));
     s = (pin_diameter*2+surface_thickness);
     for (x=[0:w-1], y=[0:w-1])
