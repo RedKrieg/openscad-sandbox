@@ -10,14 +10,14 @@ render_target = "assembly"; //[assembly,lower_race,upper_race,bearing,bearings,c
 
 outer_diameter = 477;
 outer_rim_height = 6;
-outer_rim_gap = 15;
+outer_rim_gap = 12;
 support_height = 65.4;
 surface_thickness = 1.6;
 surface_gap = 1.8;
-pin_diameter = 8;
+pin_diameter = 6;
 pin_clearance = 0.1;
 
-bearing_diameter = 20;
+bearing_diameter = 15;
 bearing_corner_radius = 1;
 segments = 7;
 
@@ -63,8 +63,11 @@ module upper_profile() {
     //inner rim
     translate([pin_diameter/2, surface_thickness]) square([surface_thickness, inner_brace_height]);
     //bearing block
-    hull() for (x=[-race_profile_size/2, race_profile_size/2])
-    translate([race_center+x-surface_thickness/2, surface_thickness]) square([surface_thickness, inner_brace_height]);
+    hull() {
+        for (x=[-race_profile_size/2+bearing_corner_radius, race_profile_size/2-bearing_corner_radius]) translate([race_center+x, surface_thickness+inner_brace_height-bearing_corner_radius]) circle(r=bearing_corner_radius);
+        translate([race_center, bearing_corner_radius]) circle(r=bearing_corner_radius);
+    }
+    //hull() for (x=[-race_profile_size/2, race_profile_size/2])    translate([race_center+x-surface_thickness/2, surface_thickness]) square([surface_thickness, inner_brace_height]);
     //middle rim
     translate([race_center/2, surface_thickness]) square([surface_thickness, inner_brace_height]);
 }
@@ -175,11 +178,14 @@ module clip() {
             cylinder(h=surface_thickness, r=inner_brace_height/2-surface_thickness/2);
             //shaft
             translate([0, 0, surface_thickness]) cylinder(h=surface_thickness*2+pin_clearance, d=pin_diameter);
-            //cap
-            translate([0, 0, surface_thickness*3+pin_clearance]) cylinder(h=surface_thickness, d1=pin_diameter+surface_thickness, d2=pin_diameter);
+            //hooks
+            translate([0, 0, surface_thickness*3+pin_clearance]) cylinder(h=surface_thickness/2, d=pin_diameter+surface_thickness);
+            translate([0, 0, surface_thickness*3+pin_clearance+surface_thickness/2]) cylinder(h=surface_thickness, d1=pin_diameter+surface_thickness, d2=pin_diameter-surface_thickness/2);
         }
+        //flats
         for (i=[0,1])
-            mirror([0, 0, i]) translate([0, pin_diameter, -pin_diameter-surface_thickness*1.5]) cube(pin_diameter*2, center=true);
+            mirror([0, 0, i]) translate([0, pin_diameter, -pin_diameter*4/3]) cube(pin_diameter*2, center=true);
+        //slot
         hull() {
             for (y=[surface_thickness*1.5, pin_diameter*2])
             translate([0, y, 0]) cylinder(h=pin_diameter*2, d=surface_thickness, center=true);
