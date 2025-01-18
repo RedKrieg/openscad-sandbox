@@ -1,6 +1,6 @@
 /*
     Segmented Turntable by RedKrieg (redkrieg@gmail.com)
-    Opposing Cylinder Bearings from https://www.youtube.com/watch?v=EUoU_x8Me8Q
+    Opposing Cylinder Bearings idea from https://www.youtube.com/watch?v=EUoU_x8Me8Q
     
 */
 $fs = 0.2;
@@ -8,10 +8,10 @@ $fa = 0.2;
 
 render_target = "assembly"; //[assembly,lower_race,upper_race,bearing,bearings,clip,clips,center_pin]
 
-outer_diameter = 477;
-outer_rim_height = 6;
-outer_rim_gap = 12;
-support_height = 65.4;
+outer_diameter = 490;
+outer_rim_height = 7;
+outer_rim_gap = 20;
+support_height = 75;
 surface_thickness = 1.6;
 surface_gap = 1.8;
 pin_diameter = 6;
@@ -54,7 +54,7 @@ module upper_profile() {
     //flat
     translate([pin_diameter/2, 0]) square([outer_r-pin_diameter/2+surface_thickness, surface_thickness]);
     //outer rim
-    translate([outer_r+surface_thickness, surface_thickness]) square([surface_thickness, inner_brace_height+outer_rim_height]);
+    translate([outer_r+surface_thickness, surface_thickness]) square([surface_thickness, inner_brace_height+outer_rim_height+surface_thickness]);
     //outer chamfer
     hull() {
         translate([outer_r, 0]) square(surface_thickness);
