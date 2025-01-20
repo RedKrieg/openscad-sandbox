@@ -6,7 +6,7 @@
 $fs = 0.2;
 $fa = 0.2;
 
-render_target = "assembly"; //[assembly,lower_race,upper_race,bearing,bearings,clip,clips,center_pin]
+render_target = "assembly"; //[assembly,lower_race,upper_race,bearing,bearings,clip,clips,center_pin,shim,shims]
 
 outer_diameter = 490;
 outer_rim_height = 7;
@@ -171,6 +171,13 @@ module bearing() {
     }
 }
 
+module bearings() {
+    w = ceil(sqrt(bearing_count));
+    s = (bearing_diameter+surface_thickness);
+    for (x=[0:w-1], y=[0:w-1])
+        if (x*w+y<bearing_count) translate([x*s, y*s, 0]) bearing();
+}
+
 module clip() {
     difference() {
         rotate([-90, 0, 0]) union() {
@@ -193,13 +200,6 @@ module clip() {
     }
 }
 
-module bearings() {
-    w = ceil(sqrt(bearing_count));
-    s = (bearing_diameter+surface_thickness);
-    for (x=[0:w-1], y=[0:w-1])
-        if (x*w+y<bearing_count) translate([x*s, y*s, 0]) bearing();
-}
-
 module clips() {
     c = 6*segments;
     w = ceil(sqrt(c));
@@ -211,6 +211,26 @@ module clips() {
 module center_pin() {
     translate([0, 0, -0.4]) cylinder(h=0.4, d=pin_diameter+surface_thickness);
     cylinder(h=surface_thickness+inner_brace_height, d=pin_diameter);
+}
+
+module shim() {
+    h=pin_diameter*2/3;
+    r=(surface_thickness-pin_clearance)/2;
+    hull() {
+        cylinder(h=h, r=r);
+        translate([0, pin_diameter-r, 0]) cylinder(h=h, r=r);
+    }
+    hull()
+        for (x=[-pin_diameter/3,pin_diameter/3])
+        translate([x, 0, 0]) cylinder(h=h, r=r);
+}
+
+module shims() {
+    c = 6*segments;
+    w = ceil(sqrt(c));
+    s = (pin_diameter*2+surface_thickness);
+    for (x=[0:w-1], y=[0:w-1])
+        if (x*w+y<c) translate([x*s, y*s, 0]) shim();
 }
 
 module assembly() {
@@ -247,5 +267,9 @@ else if (render_target=="clips")
     clips();
 else if (render_target=="center_pin")
     center_pin();
+else if (render_target=="shim")
+    shim();
+else if (render_target=="shims")
+    shims();
 else
-    upper_profile();
+    echo("ERROR: Invalid render target");
