@@ -215,7 +215,7 @@ module center_pin() {
 
 module shim() {
     h=pin_diameter*2/3;
-    r=(surface_thickness-pin_clearance)/2;
+    r=(surface_thickness)/2-pin_clearance;
     hull() {
         cylinder(h=h, r=r);
         translate([0, pin_diameter-r, 0]) cylinder(h=h, r=r);
