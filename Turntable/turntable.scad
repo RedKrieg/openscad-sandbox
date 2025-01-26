@@ -11,7 +11,7 @@ render_target = "assembly"; //[assembly,lower_race,upper_race,bearing,bearings,c
 outer_diameter = 490;
 outer_rim_height = 7;
 outer_rim_gap = 20;
-support_height = 75;
+support_height = 12;
 surface_thickness = 1.6;
 surface_gap = 1.8;
 pin_diameter = 6;
@@ -20,6 +20,8 @@ pin_clearance = 0.1;
 bearing_diameter = 15;
 bearing_corner_radius = 1;
 segments = 7;
+
+cup_diameter=13;
 
 race_profile_size = (bearing_diameter+surface_thickness*2)*sqrt(2);
 race_cutout_size = bearing_diameter*sqrt(2);
@@ -115,6 +117,16 @@ module leg_cutout() {
     }
 }
 
+module cup() {
+    rotate_extrude() {
+        hull() {
+            square([cup_diameter/2+surface_thickness,surface_thickness]);
+            translate([0,-cup_diameter/2]) square([surface_thickness,cup_diameter/2]);
+        }
+        translate([cup_diameter/2, surface_thickness]) square([surface_thickness, surface_thickness]);
+    }
+}
+
 module lower_race() {
     difference() {
         union() {
@@ -136,6 +148,8 @@ module lower_race() {
                 translate([race_center+surface_thickness, surface_thickness, surface_thickness+inner_brace_height]) rotate([90, 0, 0]) linear_extrude(surface_thickness*2) polygon([[0,0],[race_center-inner_hole_radius-surface_thickness,0],[0,support_height-inner_brace_height]]);
                 //inner brace
                 translate([inner_hole_radius, surface_thickness, surface_thickness+inner_brace_height]) rotate([90, 0, 0]) linear_extrude(surface_thickness*2) polygon([[0,0],[race_center-inner_hole_radius-surface_thickness,0],[race_center-inner_hole_radius-surface_thickness,support_height-inner_brace_height]]);
+                //cup
+                translate([race_center, 0, inner_brace_height+surface_thickness]) cup();
             }
         }
         //we have to cut this twice because for some reason cutting it now without cutting it up top in 2d makes the surface non-manifold
