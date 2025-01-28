@@ -9,7 +9,7 @@ $fa = 0.2;
 render_target = "assembly"; //[assembly,lower_race,upper_race,bearing,bearings,clip,clips,center_pin,shim,shims]
 
 outer_diameter = 490;
-outer_rim_height = 7;
+outer_rim_height = 12.5;
 outer_rim_gap = 20;
 support_height = 12;
 surface_thickness = 1.6;
