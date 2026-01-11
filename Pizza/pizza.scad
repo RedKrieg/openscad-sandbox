@@ -9,16 +9,21 @@ $fa = 1;
 pepperoni_diameter = 2.6;
 pepperoni_count = 33;
 
+green_pepper_diameter = 5;
+green_pepper_width = 0.8;
+green_pepper_extra_angle = 30;
+green_pepper_count = 13;
+
 slice_count = 8;
 slice_angle = 360/slice_count;
 slice_width = layer_height;
 
 module base() {
-    cylinder(h=base_height, d=pizza_diameter);
+    color("yellow") cylinder(h=base_height, d=pizza_diameter);
 }
 
 module crust() {
-    difference() {
+    color("yellow") difference() {
         translate([0, 0, base_height]) // move so center is at base_height
         rotate_extrude() // form toroid from
         translate([pizza_diameter/2-crust_diameter/2, 0]) //move circle to edge of crust
@@ -28,7 +33,18 @@ module crust() {
 }
 
 module pepperoni() {
+    color("red")
     cylinder(h=base_height+layer_height, d=pepperoni_diameter); //single layer above base
+}
+
+module green_pepper() {
+    color("green") rotate(rands(0, 360, 1)[0]) // randomize orientation
+    translate([0, 0, base_height/2+layer_height])
+    scale([1, 0.5, 1]) // squish in y direction
+    rotate(-green_pepper_extra_angle/2) // even out the halves
+    rotate_extrude(180+green_pepper_extra_angle) // only render a bit over half the pepper
+    translate([green_pepper_diameter/2-green_pepper_width, -green_pepper_width, 0]) // move square to edge of pepper length
+    square([green_pepper_width, base_height+layer_height*2]);
 }
 
 module distribute_toppings(topping_diameter, count=25) {
@@ -71,6 +87,7 @@ module pizza(toppings=true) {
                 base();
                 if(toppings) {
                     distribute_toppings(pepperoni_diameter, pepperoni_count) pepperoni();
+                    distribute_toppings(green_pepper_diameter, green_pepper_count) green_pepper();
                 }
             }
             slicer(); // use boolean difference to slice
@@ -79,5 +96,9 @@ module pizza(toppings=true) {
     }
 }
 
-for (x=[0:5], y=[0:1]) translate([(pizza_diameter+5)*x, (pizza_diameter+5)*y, 0]) rotate(20) pizza(true);
-for (x=[0:5], y=[2:3]) translate([(pizza_diameter+5)*x, (pizza_diameter+5)*y, 0]) rotate(20) pizza(false);
+module pizza_array() {
+    for (x=[0:5], y=[0:1]) translate([(pizza_diameter+5)*x, (pizza_diameter+5)*y, 0]) rotate(20) pizza(true);
+    for (x=[0:5], y=[2:3]) translate([(pizza_diameter+5)*x, (pizza_diameter+5)*y, 0]) rotate(20) pizza(false);
+}
+
+pizza_array();
