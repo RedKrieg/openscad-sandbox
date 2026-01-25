@@ -7,13 +7,13 @@ instax_inner = [62, 46];
 instax_lower_offset = 16.25;
 instax_thickness = 1.0;
 
-wall_thickness = 2.4;
+wall_thickness = 2.2;
 
-magnet_radius = 3;
-magnet_height = 1.8;
+magnet_radius = 3.05;
+magnet_height = 2.0;
 
 module magnet_shell() {
-    cylinder(h=magnet_height+layer_height*4, r=magnet_radius+wall_thickness);
+    cylinder(h=magnet_height+layer_height*2, r=magnet_radius+wall_thickness);
 }
 
 module magnet_pocket() {
@@ -43,8 +43,13 @@ module frame_back() {
                         translate([x, y, wall_thickness]) magnet_shell();
                 frame_inner(h=wall_thickness+instax_thickness+layer_height*4);
             }
-            for (x=[0, instax_outer.x], y=[0, instax_outer.y])
+            for (x=[0, instax_outer.x], y=[0, instax_outer.y]) {
                 translate([x, y, wall_thickness]) magnet_shell();
+                intersection() {
+                    cube([instax_outer.x, instax_outer.y, wall_thickness+magnet_height+layer_height*2]);
+                    translate([x, y, wall_thickness]) rotate(45) linear_extrude(magnet_height+layer_height*2) square((magnet_radius+wall_thickness)*2, center=true);
+                }
+            }
         }
         for (x=[0, instax_outer.x], y=[0, instax_outer.y])
                 translate([x, y, wall_thickness]) magnet_pocket();
