@@ -56,6 +56,27 @@ module cylindered_cube(total_x, total_y, total_z, rounding) {
     }
 }
 
+module rounded_cube(total_x, total_y, total_z, rounding) {
+    hull() {
+        for(
+            x=[
+                rounding,
+                total_x-rounding
+            ],
+            y=[
+                rounding,
+                total_y-rounding
+            ],
+            z=[
+                rounding,
+                total_z-rounding
+            ])
+            {
+                translate([x, y, z]) sphere(r=rounding);
+        }
+    }
+}
+
 module tool_holder_cutter(offset_x, offset_y) {
     difference() {
         translate([
@@ -96,7 +117,7 @@ module tool_holder_inner() {
         (screw_hole_max_diameter)/2-tool_holder_extra_width+wall_thickness,
         (screw_hole_max_diameter)/2+wall_thickness,
         wall_thickness
-    ]) cylindered_cube(
+    ]) rounded_cube(
         tool_holder_extra_width*2+screw_hole_gap-wall_thickness*2,
         tool_holder_depth-wall_thickness*2,
         tool_holder_height,
